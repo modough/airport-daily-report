@@ -1,0 +1,482 @@
+import type { FieldSpec, SectionSpec } from "./services";
+
+export type BriefingServiceKey = "passenger" | "traffic";
+
+export type BriefingSpec = {
+  key: BriefingServiceKey;
+  label: string;
+  description: string;
+  sections: SectionSpec[];
+  /** Column definitions when the briefing uses a multi-flight table */
+  columns?: FieldSpec[];
+};
+
+export type BriefingRow = Record<string, string>;
+
+export type Briefing = {
+  id: string;
+  service: BriefingServiceKey;
+  date: string;
+  values: Record<string, string>;
+  rows: BriefingRow[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const BRIEFINGS: BriefingSpec[] = [
+  {
+    key: "passenger",
+    label: "Passage",
+    description: "Briefing prévisionnel des informations de vol pour le service passage",
+
+    sections: [
+      {
+        title: "Détails du briefing",
+        fields: [
+          { name: "date", label: "Date", type: "date" },
+          { name: "briefingTime", label: "Heure du briefing", type: "time" },
+          { name: "shift", label: "Vacation", type: "text" },
+          {
+            name: "supervisorName",
+            label: "Nom du superviseur de vol",
+            type: "text",
+          },
+        ],
+      },
+
+      {
+        title: "Informations prévisionnelles du vol",
+        fields: [
+          {
+            name: "flightNumber",
+            label: "Numéro de vol",
+            type: "text",
+          },
+          {
+            name: "destination",
+            label: "Destination",
+            type: "text",
+          },
+          {
+            name: "registration",
+            label: "Immatriculation",
+            type: "text",
+          },
+          {
+            name: "aircraftType",
+            label: "Type d'appareil",
+            type: "text",
+          },
+          {
+            name: "parking",
+            label: "Poste de stationnement",
+            type: "text",
+          },
+          {
+            name: "sta",
+            label: "STA (heure d'arrivée prévue)",
+            type: "time",
+          },
+          {
+            name: "std",
+            label: "STD (heure de départ prévue)",
+            type: "time",
+          },
+          {
+            name: "eta",
+            label: "ETA (heure d'arrivée estimée)",
+            type: "time",
+          },
+          {
+            name: "expectedPaxArrival",
+            label: "Nombre de passagers attendus à l'arrivée",
+            type: "number",
+          },
+          {
+            name: "expectedPaxDeparture",
+            label: "Nombre de passagers attendus au départ",
+            type: "number",
+          },
+          {
+            name: "expectedBags",
+            label: "Nombre de bagages prévus",
+            type: "number",
+          },
+          {
+            name: "bookedClasses",
+            label: "Répartition des réservations (Y / C / nourrissons)",
+            type: "text",
+          },
+        ],
+      },
+
+      {
+        title: "Prise en charge spéciale prévisionnelle",
+        fields: [
+          {
+            name: "wchrPax",
+            label: "WCHR / PMR attendus",
+            type: "text",
+          },
+          {
+            name: "umPax",
+            label: "UM attendus",
+            type: "text",
+          },
+          {
+            name: "vipPax",
+            label: "VIP / CIP attendus",
+            type: "text",
+          },
+          {
+            name: "specialRequests",
+            label: "Autres demandes particulières",
+            type: "textarea",
+          },
+        ],
+      },
+
+      {
+        title: "Personnel et postes",
+        fields: [
+          {
+            name: "checkinOpening",
+            label: "Heure d'ouverture des comptoirs d'enregistrement",
+            type: "time",
+          },
+          {
+            name: "checkinCounters",
+            label: "Comptoirs d'enregistrement affectés",
+            type: "text",
+          },
+          {
+            name: "boardingGate",
+            label: "Porte d'embarquement",
+            type: "text",
+          },
+          {
+            name: "ticketingAgent",
+            label: "Agent billetterie",
+            type: "text",
+          },
+          {
+            name: "checkinAgents",
+            label: "Agents d'enregistrement",
+            type: "text",
+          },
+          {
+            name: "boardingAgents",
+            label: "Agents d'embarquement",
+            type: "text",
+          },
+          {
+            name: "arrivalAgents",
+            label: "Agents arrivée / livraison bagages",
+            type: "text",
+          },
+        ],
+      },
+
+      {
+        title: "Consignes",
+        fields: [
+          {
+            name: "safetyReminders",
+            label: "Rappels sûreté et sécurité",
+            type: "textarea",
+          },
+          {
+            name: "specificDirectives",
+            label: "Directives spécifiques",
+            type: "textarea",
+          },
+          {
+            name: "remarks",
+            label: "Remarques",
+            type: "textarea",
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    key: "traffic",
+    label: "Trafic",
+    description: "Briefing prévisionnel multi-vols pour le service trafic",
+
+    sections: [
+      {
+        title: "Détails du briefing",
+        fields: [
+          { name: "date", label: "Date", type: "date" },
+          {
+            name: "briefingTime",
+            label: "Heure du briefing",
+            type: "time",
+          },
+          {
+            name: "shift",
+            label: "Horaires",
+            type: "text",
+          },
+          {
+            name: "supervisorName",
+            label: "Rédigé par",
+            type: "text",
+          },
+          {
+            name: "agentsOnDuty",
+            label: "Autres agents en service",
+            type: "text",
+          },
+        ],
+      },
+      {
+        title: "Méteo",
+        fields: [
+          {
+            name: "Sunny",
+            label: "Ensoleillée",
+            type: "checkbox",
+          },
+          {
+            name: "Cloudy",
+            label: "Nuageuse",
+            type: "checkbox",
+          },
+          {
+            name: "Rainy",
+            label: "Pluvieuse",
+            type: "checkbox",
+          },
+          {
+            name: "Stormy",
+            label: "Orage",
+            type: "checkbox",
+          },
+          {
+            name: "Snowy",
+            label: "Neige",
+            type: "checkbox",
+          },
+          {
+            name: "Windy",
+            label: "Vent",
+            type: "checkbox",
+          },
+          {
+            name: "Foggy",
+            label: "Brouillard",
+            type: "checkbox",
+          },
+          {
+            name: "Hail",
+            label: "Grêle",
+            type: "checkbox",
+          },
+        ],
+      },
+      {
+        title: "Services",
+        fields: [
+          {
+            name: "ramp",
+            label: "Piste",
+            type: "textarea",
+          },
+          {
+            name: "cargo",
+            label: "Fret",
+            type: "textarea",
+          },
+          {
+            name: "passengers",
+            label: "Passage",
+            type: "textarea",
+          },
+          {
+            name: "security",
+            label: "Sûreté",
+            type: "textarea",
+          },
+          {
+            name: "customs",
+            label: "Douanes",
+            type: "textarea",
+          },
+          {
+            name: "fueling",
+            label: "Avitaillement",
+            type: "textarea",
+          },
+        ],
+      },
+      {
+        title: "Consignes",
+        fields: [
+          {
+            name: "safetyReminders",
+            label: "Niveau RFFS",
+            type: "textarea",
+          },
+          
+          {
+            name: "notam",
+            label: "Notam",
+            type: "textarea",
+          },
+          {
+            name: "travaux",
+            label: "Travaux",
+            type: "textarea",
+          },
+          {
+            name: "specificDirectives",
+            label: "Directives spécifiques",
+            type: "textarea",
+          },
+        ],
+      },
+    ],
+
+    columns: [
+      {
+        name: "flightNumber",
+        label: "Vol",
+        type: "text",
+      },
+      {
+        name: "route",
+        label: "Itinéraire",
+        type: "text",
+      },
+      {
+        name: "parking",
+        label: "Parking",
+        type: "text",
+      },
+      {
+        name: "sta",
+        label: "STA",
+        type: "time",
+      },
+      {
+        name: "std",
+        label: "STD",
+        type: "time",
+      },
+      {
+        name: "registration",
+        label: "Immat.",
+        type: "text",
+      },
+      {
+        name: "tonsIn",
+        label: "Tonnes à l'arrivée",
+        type: "number",
+      },
+      {
+        name: "tonsOut",
+        label: "Tonnes au départ",
+        type: "number",
+      },
+      {
+        name: "pax",
+        label: "Passagers",
+        type: "number",
+      },
+      {
+        name: "catering",
+        label: "Catering",
+        type: "text",
+      },
+      {
+        name: "cleaning",
+        label: "Nettoyage",
+        type: "text",
+      },
+      {
+        name: "fueling",
+        label: "Avitaillement",
+        type: "text",
+      },
+      {
+        name: "remarks",
+        label: "Remarques",
+        type: "text",
+      },
+    ],
+  },
+];
+
+export function getBriefingSpec(key: BriefingServiceKey): BriefingSpec {
+  const found = BRIEFINGS.find((b) => b.key === key);
+  if (!found) throw new Error(`Unknown briefing service: ${key}`);
+  return found;
+}
+
+const STORAGE_KEY = "station-briefings";
+
+function generateId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+export function getAllBriefings(): Briefing[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as Briefing[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function getBriefings(service: BriefingServiceKey): Briefing[] {
+  return getAllBriefings().filter((b) => b.service === service);
+}
+
+export function getBriefingById(id: string): Briefing | undefined {
+  return getAllBriefings().find((b) => b.id === id);
+}
+
+export function saveBriefing(briefing: Briefing): void {
+  if (typeof window === "undefined") return;
+  const all = getAllBriefings();
+  const index = all.findIndex((b) => b.id === briefing.id);
+  if (index >= 0) all[index] = briefing;
+  else all.unshift(briefing);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+}
+
+export function deleteBriefing(id: string): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(getAllBriefings().filter((b) => b.id !== id)));
+}
+
+export function createEmptyRow(spec: BriefingSpec): BriefingRow {
+  const row: BriefingRow = {};
+  for (const col of spec.columns ?? []) row[col.name] = "";
+  return row;
+}
+
+export function createEmptyBriefing(service: BriefingServiceKey): Briefing {
+  const spec = getBriefingSpec(service);
+  const now = new Date().toISOString();
+  const today = now.split("T")[0]!;
+  const values: Record<string, string> = {};
+  for (const section of spec.sections) {
+    for (const field of section.fields) {
+      values[field.name] = field.name === "date" ? today : "";
+    }
+  }
+  return {
+    id: generateId(),
+    service,
+    date: today,
+    values,
+    rows: spec.columns ? [createEmptyRow(spec), createEmptyRow(spec), createEmptyRow(spec)] : [],
+    createdAt: now,
+    updatedAt: now,
+  };
+}

@@ -1,0 +1,217 @@
+import { useEffect, useMemo, useState } from "react";
+import { FileText, Plus, Save, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  createEmptyBriefing,
+  createEmptyRow,
+  getBriefingSpec,
+  saveBriefing,
+  type Briefing,
+  type BriefingServiceKey,
+} from "@/lib/briefings";
+import { generateBriefingPdf } from "@/lib/briefing-pdf";
+
+export function BriefingForm({
+  service,
+  onSaved,
+}: {
+  service: BriefingServiceKey;
+  onSaved?: () => void;
+}) {
+  const spec = useMemo(() => getBriefingSpec(service), [service]);
+  const initial = useMemo(() => createEmptyBriefing(service), [service]);
+
+  const [values, setValues] = useState(initial.values);
+  const [rows, setRows] = useState(initial.rows);
+
+  useEffect(() => {
+    setValues(initial.values);
+    setRows(initial.rows);
+  }, [initial]);
+
+  const setField = (name: string, value: string) =>
+    setValues((prev) => ({ ...prev, [name]: value }));
+
+  const setCell = (index: number, name: string, value: string) =>
+    setRows((prev) => prev.map((row, i) => (i === index ? { ...row, [name]: value } : row)));
+
+  const build = (): Briefing => {
+    const now = new Date().toISOString();
+    return {
+      ...initial,
+      date: values["date"] || initial.date,
+      values,
+      rows,
+      updatedAt: now,
+    };
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    saveBriefing(build());
+    onSaved?.();
+    toast.success("Briefing saved successfully");
+  };
+
+  const columns = spec.columns ?? [];
+
+  return (
+    <Card className="border-none bg-card">
+      <CardHeader className="pb-4 bg-[rgb(30,58,95))] text-white rounded-t-lg">
+        <CardTitle className="text-lg font-semibold tracking-tight uppercase">
+          Briefing Service {spec.label}
+        </CardTitle>
+        <p className="text-sm text-white">{spec.description}</p>
+      </CardHeader>
+      <CardContent className="space-y-6 p-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {spec.sections.map((section) => (
+            <section
+              key={section.title}
+              className="space-y-4 border-l-[3px] border-[rgb(59,130,246)] pl-4"
+            >
+              <h3 className="pb-2 text-sm font-bold text-[#1E3A5F] uppercase tracking-wide">
+                {section.title}
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {section.fields.map((field) => (
+                  <div
+                    key={field.name}
+                    className={`space-y-2 ${field.type === "textarea" ? "sm:col-span-2" : ""}`}
+                  >
+                    {field.type === "checkbox" ? (
+                      <div className="flex items-center gap-3  bg-background px-3 py-2">
+                        <input
+                          id={`briefing-${service}-${field.name}`}
+                          type="checkbox"
+                          checked={values[field.name] === "true"}
+                          onChange={(e) => setField(field.name, e.target.checked ? "true" : "false")}
+                          className="h-4 w-4 accent-primary"
+                        />
+                        <Label
+                          htmlFor={`briefing-${service}-${field.name}`}
+                          className="text-muted-foreground"
+                        >
+                          {field.label}
+                        </Label>
+                      </div>
+                    ) : (
+                      <>
+                        <Label
+                          htmlFor={`briefing-${service}-${field.name}`}
+                          className="text-muted-foreground"
+                        >
+                          {field.label}
+                        </Label>
+                        {field.type === "textarea" ? (
+                          <Textarea
+                            id={`briefing-${service}-${field.name}`}
+                            rows={3}
+                            value={values[field.name] ?? ""}
+                            onChange={(e) => setField(field.name, e.target.value)}
+                            className="resize-none bg-background"
+                          />
+                        ) : (
+                          <Input
+                            id={`briefing-${service}-${field.name}`}
+                            type={field.type}
+                            value={values[field.name] ?? ""}
+                            onChange={(e) => setField(field.name, e.target.value)}
+                            className="bg-background"
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+          {columns.length > 0 && (
+            <section className="space-y-4 border-l-[3px] border-[rgb(59,130,246)] pl-4">
+              <h3 className="pb-2 text-sm font-bold uppercase tracking-wide text-[#1E3A5F]">
+                Prévision des vols
+              </h3>
+              <div className="overflow-x-auto rounded-lg border border-border">
+                <table className=" border-collapse text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      {columns.map((col) => (
+                        <th
+                          key={col.name}
+                          className="whitespace-nowrap border-b border-border px-2 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                        >
+                          {col.label}
+                        </th>
+                      ))}
+                      <th className=" border-b border-border" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((row, index) => (
+                      <tr key={index} className="border-b border-border last:border-0">
+                        {columns.map((col) => (
+                          <td key={col.name} className="p-1">
+                            <Input
+                              type={col.type}
+                              aria-label={`${col.label} row ${index + 1}`}
+                              value={row[col.name] ?? ""}
+                              onChange={(e) => setCell(index, col.name, e.target.value)}
+                              className="h-9  bg-background text-sm"
+                            />
+                          </td>
+                        ))}
+                        <td className="p-1 text-center">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={`Remove row ${index + 1}`}
+                            onClick={() => setRows((prev) => prev.filter((_, i) => i !== index))}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setRows((prev) => [...prev, createEmptyRow(spec)])}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter un vol
+              </Button>
+            </section>
+          )}
+
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+            <Button type="submit" className="flex-1">
+              <Save className="mr-2 h-4 w-4" />
+              Enregistrer le briefing
+            </Button>
+            <Button
+              type="button"
+              variant="red"
+              onClick={() => generateBriefingPdf(build())}
+              className="flex-1"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Generer le PDF
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
