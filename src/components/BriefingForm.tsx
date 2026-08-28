@@ -138,51 +138,49 @@ export function BriefingForm({
               <h3 className="pb-2 text-sm font-bold uppercase tracking-wide text-[#1E3A5F]">
                 Prévision des vols
               </h3>
-              <div className="overflow-x-auto rounded-lg border border-border">
-                <table className=" border-collapse text-sm">
-                  <thead className="bg-muted/50">
-                    <tr>
+
+              <div className="space-y-3">
+                {rows.map((row, index) => (
+                  <div
+                    key={index}
+                    className="rounded-lg border border-border bg-background p-3 shadow-sm"
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Vol {index + 1}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label={`Remove row ${index + 1}`}
+                        onClick={() => setRows((prev) => prev.filter((_, i) => i !== index))}
+                        className="h-8 w-8"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
                       {columns.map((col) => (
-                        <th
-                          key={col.name}
-                          className="whitespace-nowrap border-b border-border px-2 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-                        >
-                          {col.label}
-                        </th>
+                        <div key={col.name} className="space-y-2">
+                          <Label htmlFor={`briefing-row-${index}-${col.name}`} className="text-muted-foreground">
+                            {col.label}
+                          </Label>
+                          <Input
+                            id={`briefing-row-${index}-${col.name}`}
+                            type={col.type}
+                            value={row[col.name] ?? ""}
+                            onChange={(e) => setCell(index, col.name, e.target.value)}
+                            className="w-full bg-background"
+                          />
+                        </div>
                       ))}
-                      <th className=" border-b border-border" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row, index) => (
-                      <tr key={index} className="border-b border-border last:border-0">
-                        {columns.map((col) => (
-                          <td key={col.name} className="p-1">
-                            <Input
-                              type={col.type}
-                              aria-label={`${col.label} row ${index + 1}`}
-                              value={row[col.name] ?? ""}
-                              onChange={(e) => setCell(index, col.name, e.target.value)}
-                              className="h-9  bg-background text-sm"
-                            />
-                          </td>
-                        ))}
-                        <td className="p-1 text-center">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            aria-label={`Remove row ${index + 1}`}
-                            onClick={() => setRows((prev) => prev.filter((_, i) => i !== index))}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </div>
+                  </div>
+                ))}
               </div>
+
               <Button
                 type="button"
                 variant="outline"
