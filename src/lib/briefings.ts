@@ -9,6 +9,7 @@ export type BriefingSpec = {
   sections: SectionSpec[];
   /** Column definitions when the briefing uses a multi-flight table */
   columns?: FieldSpec[];
+  tomorrowColumns?: FieldSpec[];
 };
 
 export type BriefingRow = Record<string, string>;
@@ -19,6 +20,7 @@ export type Briefing = {
   date: string;
   values: Record<string, string>;
   rows: BriefingRow[];
+  tomorrowRows?: BriefingRow[];
   createdAt: string;
   updatedAt: string;
 };
@@ -35,7 +37,6 @@ export const BRIEFINGS: BriefingSpec[] = [
         fields: [
           { name: "date", label: "Date", type: "date" },
           { name: "briefingTime", label: "Heure du briefing", type: "time" },
-          { name: "shift", label: "Vacation", type: "text" },
           {
             name: "supervisorName",
             label: "Nom du superviseur de vol",
@@ -74,38 +75,45 @@ export const BRIEFINGS: BriefingSpec[] = [
           },
           {
             name: "sta",
-            label: "STA (heure d'arrivée prévue)",
+            label: "STA",
+            type: "time",
+          },
+
+          {
+            name: "eta",
+            label: "ETA",
             type: "time",
           },
           {
             name: "std",
-            label: "STD (heure de départ prévue)",
-            type: "time",
-          },
-          {
-            name: "eta",
-            label: "ETA (heure d'arrivée estimée)",
+            label: "STD",
             type: "time",
           },
           {
             name: "expectedPaxArrival",
-            label: "Nombre de passagers attendus à l'arrivée",
+            label: "Pax prévus à l'arrivée",
             type: "number",
           },
           {
             name: "expectedPaxDeparture",
-            label: "Nombre de passagers attendus au départ",
+            label: "Pax prévus au départ",
             type: "number",
           },
+
           {
             name: "expectedBags",
-            label: "Nombre de bagages prévus",
+            label: "Bagages prévus à l'arrivée",
             type: "number",
           },
           {
-            name: "bookedClasses",
-            label: "Répartition des réservations (Y / C / nourrissons)",
-            type: "text",
+            name: "expectedBagsDeparture",
+            label: "Bagages prévus au départ",
+            type: "number",
+          },
+          {
+            name: "surbokedPax",
+            label: "Vol surbook ?",
+            type: "checkbox",
           },
         ],
       },
@@ -115,22 +123,17 @@ export const BRIEFINGS: BriefingSpec[] = [
         fields: [
           {
             name: "wchrPax",
-            label: "WCHR / PMR attendus",
-            type: "text",
-          },
-          {
-            name: "umPax",
-            label: "UM attendus",
+            label: "PMR attendus",
             type: "text",
           },
           {
             name: "vipPax",
-            label: "VIP / CIP attendus",
+            label: "VIP / STAFF attendus",
             type: "text",
           },
           {
             name: "specialRequests",
-            label: "Autres demandes particulières",
+            label: "Precisez les demandes particulières",
             type: "textarea",
           },
         ],
@@ -141,12 +144,17 @@ export const BRIEFINGS: BriefingSpec[] = [
         fields: [
           {
             name: "checkinOpening",
-            label: "Heure d'ouverture des comptoirs d'enregistrement",
+            label: "Heure d'ouverture check-in",
             type: "time",
           },
           {
             name: "checkinCounters",
-            label: "Comptoirs d'enregistrement affectés",
+            label: "Comptoirs d'enregistrement",
+            type: "text",
+          },
+          {
+            name: "webcheckinCounters",
+            label: "Comptoir web check-in",
             type: "text",
           },
           {
@@ -171,7 +179,7 @@ export const BRIEFINGS: BriefingSpec[] = [
           },
           {
             name: "arrivalAgents",
-            label: "Agents arrivée / livraison bagages",
+            label: "Agents litiges bagages",
             type: "text",
           },
         ],
@@ -320,7 +328,7 @@ export const BRIEFINGS: BriefingSpec[] = [
             label: "Niveau RFFS",
             type: "textarea",
           },
-          
+
           {
             name: "notam",
             label: "Notam",
@@ -373,27 +381,17 @@ export const BRIEFINGS: BriefingSpec[] = [
       },
       {
         name: "tonsIn",
-        label: "Tonnes à l'arrivée",
+        label: "IN",
         type: "number",
       },
       {
         name: "tonsOut",
-        label: "Tonnes au départ",
-        type: "number",
-      },
-      {
-        name: "pax",
-        label: "Passagers",
+        label: "OUT",
         type: "number",
       },
       {
         name: "catering",
         label: "Catering",
-        type: "text",
-      },
-      {
-        name: "cleaning",
-        label: "Nettoyage",
         type: "text",
       },
       {
@@ -405,6 +403,76 @@ export const BRIEFINGS: BriefingSpec[] = [
         name: "remarks",
         label: "Remarques",
         type: "text",
+      },
+      {
+        name: "flightType",
+        label: "Type de vol",
+        type: "select",
+      },
+    ],
+
+    tomorrowColumns: [
+      {
+        name: "flightNumber",
+        label: "Vol",
+        type: "text",
+      },
+      {
+        name: "route",
+        label: "Itinéraire",
+        type: "text",
+      },
+      {
+        name: "parking",
+        label: "Parking",
+        type: "text",
+      },
+      {
+        name: "sta",
+        label: "STA",
+        type: "time",
+      },
+      {
+        name: "std",
+        label: "STD",
+        type: "time",
+      },
+      {
+        name: "registration",
+        label: "Immat.",
+        type: "text",
+      },
+      {
+        name: "tonsIn",
+        label: "IN",
+        type: "number",
+      },
+      {
+        name: "tonsOut",
+        label: "OUT",
+        type: "number",
+      },
+
+      {
+        name: "catering",
+        label: "Catering",
+        type: "text",
+      },
+
+      {
+        name: "fueling",
+        label: "Avitaillement",
+        type: "text",
+      },
+      {
+        name: "remarks",
+        label: "Remarques",
+        type: "text",
+      },
+      {
+        name: "flightType",
+        label: "Type de vol",
+        type: "select",
       },
     ],
   },
@@ -456,7 +524,8 @@ export function deleteBriefing(id: string): void {
 
 export function createEmptyRow(spec: BriefingSpec): BriefingRow {
   const row: BriefingRow = {};
-  for (const col of spec.columns ?? []) row[col.name] = "";
+  const activeColumns = spec.tomorrowColumns?.length ? spec.tomorrowColumns : (spec.columns ?? []);
+  for (const col of activeColumns) row[col.name] = "";
   return row;
 }
 
@@ -470,12 +539,25 @@ export function createEmptyBriefing(service: BriefingServiceKey): Briefing {
       values[field.name] = field.name === "date" ? today : "";
     }
   }
+
+  const todayRows = spec.columns
+    ? [createEmptyRow(spec), createEmptyRow(spec), createEmptyRow(spec)]
+    : [];
+  const tomorrowRows = spec.tomorrowColumns
+    ? [
+        createEmptyRow({ ...spec, columns: spec.tomorrowColumns }),
+        createEmptyRow({ ...spec, columns: spec.tomorrowColumns }),
+        createEmptyRow({ ...spec, columns: spec.tomorrowColumns }),
+      ]
+    : [];
+
   return {
     id: generateId(),
     service,
     date: today,
     values,
-    rows: spec.columns ? [createEmptyRow(spec), createEmptyRow(spec), createEmptyRow(spec)] : [],
+    rows: todayRows,
+    tomorrowRows,
     createdAt: now,
     updatedAt: now,
   };

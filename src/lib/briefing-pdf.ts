@@ -265,7 +265,7 @@ export async function generateBriefingPdf(briefing: Briefing): Promise<void> {
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(`${spec.label} Service`, titleX, 24);
+  doc.text(`Service ${spec.label}`, titleX, 24);
   doc.text(formatDate(briefing.values["date"] || briefing.date), titleX, 30);
 
   const rightX = pageWidth - margin;
@@ -321,12 +321,58 @@ export async function generateBriefingPdf(briefing: Briefing): Promise<void> {
   }
 
   const columns = spec.columns ?? [];
+  const tomorrowColumns = spec.tomorrowColumns ?? [];
   const rows = briefing.rows.filter((row) => columns.some((col) => (row[col.name] ?? "").trim() !== ""));
 
   if (columns.length > 0 && rows.length > 0) {
     y = addPageIfNeeded(doc, y, 26);
     y = addSectionTitle(doc, "Prévision des vols", margin, y);
 
+    const colWidth = contentWidth / columns.length;
+    const rowHeight = 8;
+
+    const drawHeader = () => {
+      doc.setFillColor(...COLORS.bg);
+      doc.rect(margin, y, contentWidth, rowHeight, "F");
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...COLORS.text);
+      columns.forEach((col, index) => {
+        doc.text(col.label, margin + index * colWidth + 1.5, y + 5.5, { maxWidth: colWidth - 3 });
+      });
+      y += rowHeight;
+    };
+
+    drawHeader();
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...COLORS.text);
+
+    for (const row of rows) {
+      if (y + rowHeight > pageHeight - 18) {
+        doc.addPage();
+        y = 24;
+        drawHeader();
+      }
+
+      doc.setDrawColor(...COLORS.border);
+      doc.rect(margin, y, contentWidth, rowHeight);
+      doc.setFontSize(7.5);
+      columns.forEach((col, index) => {
+        const text = (row[col.name] ?? "").trim();
+        if (text) {
+          doc.text(text, margin + index * colWidth + 1.5, y + 5.5, { maxWidth: colWidth - 3 });
+        }
+        if (index > 0) doc.line(margin + index * colWidth, y, margin + index * colWidth, y + rowHeight);
+      });
+      y += rowHeight;
+    }
+
+    y += 6;
+  }
+  if (tomorrowColumns.length > 0 && rows.length > 0) {
+    y = addPageIfNeeded(doc, y, 26);
+    y = addSectionTitle(doc, "Prévision des vols demain", margin, y);
     const colWidth = contentWidth / columns.length;
     const rowHeight = 8;
 

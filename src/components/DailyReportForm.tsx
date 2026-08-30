@@ -65,7 +65,7 @@ export function DailyReportForm({ service, selectedId, onSaved }: DailyReportFor
     <Card className="bg-card border-none">
       <CardHeader className="pb-4 bg-[rgb(30,58,95))] text-white rounded-t-lg">
         <CardTitle className="text-lg font-semibold tracking-tight uppercase">
-          {selectedId ? "Modifier" : "Nouvelle"} remise de poste service {spec.label}
+          {selectedId ? "Modifier" : ""} remise de poste service {spec.label}
         </CardTitle>
         <p className="text-sm text-white">{spec.description}</p>
       </CardHeader>

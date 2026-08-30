@@ -8,8 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   createEmptyBriefing,
-  createEmptyRow,
   getBriefingSpec,
   saveBriefing,
   type Briefing,
@@ -29,10 +35,12 @@ export function BriefingForm({
 
   const [values, setValues] = useState(initial.values);
   const [rows, setRows] = useState(initial.rows);
+  const [tomorrowRows, setTomorrowRows] = useState(initial.tomorrowRows ?? []);
 
   useEffect(() => {
     setValues(initial.values);
     setRows(initial.rows);
+    setTomorrowRows(initial.tomorrowRows ?? []);
   }, [initial]);
 
   const setField = (name: string, value: string) =>
@@ -41,6 +49,11 @@ export function BriefingForm({
   const setCell = (index: number, name: string, value: string) =>
     setRows((prev) => prev.map((row, i) => (i === index ? { ...row, [name]: value } : row)));
 
+  const setTomorrowCell = (index: number, name: string, value: string) =>
+    setTomorrowRows((prev) =>
+      prev.map((row, i) => (i === index ? { ...row, [name]: value } : row)),
+    );
+
   const build = (): Briefing => {
     const now = new Date().toISOString();
     return {
@@ -48,6 +61,7 @@ export function BriefingForm({
       date: values["date"] || initial.date,
       values,
       rows,
+      tomorrowRows,
       updatedAt: now,
     };
   };
@@ -60,16 +74,18 @@ export function BriefingForm({
   };
 
   const columns = spec.columns ?? [];
+  const tomorrowColumns = spec.tomorrowColumns ?? [];
+  const flightTypeOptions = ["PAX", "CGO", "TNG", "CMM"];
 
   return (
-    <Card className="border-none bg-card">
+    <Card className="min-w-0 border-none bg-card">
       <CardHeader className="pb-4 bg-[rgb(30,58,95))] text-white rounded-t-lg">
         <CardTitle className="text-lg font-semibold tracking-tight uppercase">
           Briefing Service {spec.label}
         </CardTitle>
         <p className="text-sm text-white">{spec.description}</p>
       </CardHeader>
-      <CardContent className="space-y-6 p-6">
+      <CardContent className="min-w-0 space-y-6 p-6">
         <form onSubmit={handleSubmit} className="space-y-8">
           {spec.sections.map((section) => (
             <section
@@ -79,7 +95,7 @@ export function BriefingForm({
               <h3 className="pb-2 text-sm font-bold text-[#1E3A5F] uppercase tracking-wide">
                 {section.title}
               </h3>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-4">
                 {section.fields.map((field) => (
                   <div
                     key={field.name}
@@ -91,7 +107,9 @@ export function BriefingForm({
                           id={`briefing-${service}-${field.name}`}
                           type="checkbox"
                           checked={values[field.name] === "true"}
-                          onChange={(e) => setField(field.name, e.target.checked ? "true" : "false")}
+                          onChange={(e) =>
+                            setField(field.name, e.target.checked ? "true" : "false")
+                          }
                           className="h-4 w-4 accent-primary"
                         />
                         <Label
@@ -101,6 +119,30 @@ export function BriefingForm({
                           {field.label}
                         </Label>
                       </div>
+                    ) : field.type === "select" ? (
+                      <>
+                        <Label
+                          htmlFor={`briefing-${service}-${field.name}`}
+                          className="text-muted-foreground"
+                        >
+                          {field.label}
+                        </Label>
+                        <Select
+                          value={values[field.name] ?? ""}
+                          onValueChange={(value) => setField(field.name, value)}
+                        >
+                          <SelectTrigger id={`briefing-${service}-${field.name}`} className="bg-background">
+                            <SelectValue placeholder="Sélectionner" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {flightTypeOptions.map((option) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </>
                     ) : (
                       <>
                         <Label
@@ -134,58 +176,171 @@ export function BriefingForm({
             </section>
           ))}
           {columns.length > 0 && (
-            <section className="space-y-4 border-l-[3px] border-[rgb(59,130,246)] pl-4">
+            <section className="min-w-0 space-y-4 border-l-[3px] border-[rgb(59,130,246)] pl-4">
               <h3 className="pb-2 text-sm font-bold uppercase tracking-wide text-[#1E3A5F]">
-                Prévision des vols
+                Prévision des vols - Aujourd'hui
               </h3>
-
-              <div className="space-y-3">
-                {rows.map((row, index) => (
-                  <div
-                    key={index}
-                    className="rounded-lg border border-border bg-background p-3 shadow-sm"
-                  >
-                    <div className="mb-3 flex items-center justify-between gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Vol {index + 1}
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Remove row ${index + 1}`}
-                        onClick={() => setRows((prev) => prev.filter((_, i) => i !== index))}
-                        className="h-8 w-8"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    <div className="grid gap-3 sm:grid-cols-2">
+              <div className="min-w-0 max-w-full overflow-x-scroll rounded-lg border border-border">
+                <table className="min-w-[1200px] border-collapse text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
                       {columns.map((col) => (
-                        <div key={col.name} className="space-y-2">
-                          <Label htmlFor={`briefing-row-${index}-${col.name}`} className="text-muted-foreground">
-                            {col.label}
-                          </Label>
-                          <Input
-                            id={`briefing-row-${index}-${col.name}`}
-                            type={col.type}
-                            value={row[col.name] ?? ""}
-                            onChange={(e) => setCell(index, col.name, e.target.value)}
-                            className="w-full bg-background"
-                          />
-                        </div>
+                        <th
+                          key={col.name}
+                          className="whitespace-nowrap border-b border-border px-2 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                        >
+                          {col.label}
+                        </th>
                       ))}
-                    </div>
-                  </div>
-                ))}
+                      <th className="w-12 border-b border-border" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((row, index) => (
+                      <tr key={index} className="border-b border-border last:border-0">
+                        {columns.map((col) => (
+                          <td key={col.name} className="min-w-[110px] p-1">
+                            {col.type === "select" ? (
+                              <Select
+                                value={row[col.name] ?? ""}
+                                onValueChange={(value) => setCell(index, col.name, value)}
+                              >
+                                <SelectTrigger
+                                  aria-label={`${col.label} ligne ${index + 1}`}
+                                  className="h-9 w-full bg-background text-sm"
+                                >
+                                  <SelectValue placeholder="Sélectionner" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {flightTypeOptions.map((option) => (
+                                    <SelectItem key={option} value={option}>
+                                      {option}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Input
+                                type={col.type}
+                                aria-label={`${col.label} ligne ${index + 1}`}
+                                value={row[col.name] ?? ""}
+                                onChange={(e) => setCell(index, col.name, e.target.value)}
+                                className="h-9 w-full bg-background text-sm"
+                              />
+                            )}
+                          </td>
+                        ))}
+                        <td className="w-12 p-1 text-center">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={`Supprimer la ligne ${index + 1}`}
+                            onClick={() => setRows((prev) => prev.filter((_, i) => i !== index))}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setRows((prev) => [...prev, createEmptyRow(spec)])}
+                onClick={() => setRows((prev) => [...prev, Object.fromEntries(columns.map((col) => [col.name, ""]))])}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter un vol
+              </Button>
+            </section>
+          )}
+
+          {tomorrowColumns.length > 0 && (
+            <section className="min-w-0 space-y-4 border-l-[3px] border-[rgb(59,130,246)] pl-4">
+              <h3 className="pb-2 text-sm font-bold uppercase tracking-wide text-[#1E3A5F]">
+                Prévision des vols - Demain
+              </h3>
+              <div className="min-w-0 max-w-full overflow-x-scroll rounded-lg border border-border">
+                <table className="min-w-[1200px] border-collapse text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      {tomorrowColumns.map((col) => (
+                        <th
+                          key={col.name}
+                          className="whitespace-nowrap border-b border-border px-2 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                        >
+                          {col.label}
+                        </th>
+                      ))}
+                      <th className="w-12 border-b border-border" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tomorrowRows.map((row, index) => (
+                      <tr key={index} className="border-b border-border last:border-0">
+                        {tomorrowColumns.map((col) => (
+                          <td key={col.name} className="min-w-[110px] p-1">
+                            {col.type === "select" ? (
+                              <Select
+                                value={row[col.name] ?? ""}
+                                onValueChange={(value) => setTomorrowCell(index, col.name, value)}
+                              >
+                                <SelectTrigger
+                                  aria-label={`${col.label} ligne ${index + 1}`}
+                                  className="h-9 w-full bg-background text-sm"
+                                >
+                                  <SelectValue placeholder="Sélectionner" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {flightTypeOptions.map((option) => (
+                                    <SelectItem key={option} value={option}>
+                                      {option}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Input
+                                type={col.type}
+                                aria-label={`${col.label} ligne ${index + 1}`}
+                                value={row[col.name] ?? ""}
+                                onChange={(e) => setTomorrowCell(index, col.name, e.target.value)}
+                                className="h-9 w-full bg-background text-sm"
+                              />
+                            )}
+                          </td>
+                        ))}
+                        <td className="w-12 p-1 text-center">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label={`Supprimer la ligne ${index + 1}`}
+                            onClick={() =>
+                              setTomorrowRows((prev) => prev.filter((_, i) => i !== index))
+                            }
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setTomorrowRows((prev) => [
+                    ...prev,
+                    Object.fromEntries(tomorrowColumns.map((col) => [col.name, ""])),
+                  ])
+                }
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Ajouter un vol

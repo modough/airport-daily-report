@@ -45,7 +45,7 @@ export function ReportHistory({ service, selectedId, onSelect, refreshKey }: Rep
   return (
     <Card className=" bg-card ">
       <CardHeader className="pb-4">
-        <CardTitle className="text-lg font-semibold tracking-tight uppercase">Rapports et briefings enregistrés</CardTitle>
+        <CardTitle className="text-lg font-semibold tracking-tight uppercase">Historique des documents</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         <ScrollArea className="h-[calc(100vh-16rem)] min-h-[300px]">
