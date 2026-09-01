@@ -13,8 +13,9 @@ import {
   type DailyReport,
   type ReportValues,
 } from "@/lib/reports";
-import { getService, type ServiceKey } from "@/lib/services";
+import { getService, passengerAgents, trafficAgents, type ServiceKey } from "@/lib/services";
 import { generateReportPdf, buildReportPdfBlob } from "@/lib/pdf-generator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 type DailyReportFormProps = {
   service: ServiceKey;
@@ -24,6 +25,7 @@ type DailyReportFormProps = {
 
 export function DailyReportForm({ service, selectedId, onSaved }: DailyReportFormProps) {
   const spec = useMemo(() => getService(service), [service]);
+  const agentsList = spec.key === "traffic" ? trafficAgents : passengerAgents;
 
   const initialReport = useMemo<DailyReport>(() => {
     if (selectedId) {
@@ -69,11 +71,14 @@ export function DailyReportForm({ service, selectedId, onSaved }: DailyReportFor
         </CardTitle>
         <p className="text-sm text-white">{spec.description}</p>
       </CardHeader>
-      
+
       <CardContent className="space-y-6 p-6">
         <form onSubmit={handleSubmit} className="space-y-8">
           {spec.sections.map((section) => (
-            <section key={section.title} className="space-y-4 border-l-[3px] border-[rgb(59,130,246)] pl-4">
+            <section
+              key={section.title}
+              className="space-y-4 border-l-[3px] border-[rgb(59,130,246)] pl-4"
+            >
               <h3 className=" pb-2 text-sm font-bold uppercase tracking-wide text-[#1E3A5F]">
                 {section.title}
               </h3>
@@ -96,6 +101,38 @@ export function DailyReportForm({ service, selectedId, onSaved }: DailyReportFor
                         onChange={(e) => setField(field.name, e.target.value)}
                         className="resize-none bg-background"
                       />
+                    ) : field.name === "supervisorName" ? (
+                      <Select
+                        value={values[field.name] ?? ""}
+                        onValueChange={(value) => setField(field.name, value)}
+                      >
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder={field.label} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {trafficAgents.map((agent) => (
+                            <SelectItem key={agent} value={agent}>
+                              {agent}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : field.type === "select" ? (
+                      <Select
+                        value={values[field.name] ?? ""}
+                        onValueChange={(value) => setField(field.name, value)}
+                      >
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder={field.label} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {agentsList.map((agent) => (
+                            <SelectItem key={agent} value={agent}>
+                              {agent}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     ) : (
                       <Input
                         id={`${service}-${field.name}`}

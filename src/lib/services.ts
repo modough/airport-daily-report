@@ -24,6 +24,19 @@ export type ServiceSpec = {
   description: string;
   sections: SectionSpec[];
 };
+export const trafficAgents = [
+  "Alice Goussale",
+  "Enzo Gaude",
+  "Lucie Milliere",
+  "Romain Bonnefille",
+  "Steven Laurent",
+];
+export const passengerAgents = [
+  "Amal Boumedien",
+  "Augustine Roussinet",
+  "Mouhamed Mbaye",
+  "Sheryne Guemazi",
+];
 
 const flightSection: SectionSpec = {
   title: "Informations générales",
@@ -57,8 +70,8 @@ const timesSection: SectionSpec = {
 const signOffSection = (): SectionSpec => ({
   title: "Personnel",
   fields: [
-    { name: "completedBy", label: "Agent(s) ayant complété le formulaire", type: "text" },
-    { name: "supervisorName", label: "Superviseur de vol", type: "text" },
+    { name: "completedBy", label: "Agent(s) ayant complété le formulaire", type: "select" },
+    { name: "supervisorName", label: "Superviseur de vol", type: "select" },
     { name: "todayAgents", label: "Nombre d'agents du jour", type: "number" },
     { name: "interimAgents", label: "Nombre d'agents intérimaires", type: "number" },
   ],
@@ -67,8 +80,8 @@ const signOffSection = (): SectionSpec => ({
 const signOffSectionForTraffic = (): SectionSpec => ({
   title: "Personnel",
   fields: [
-    { name: "completedBy", label: "Agent(s) ayant complété le formulaire", type: "text" },
-    { name: "agentName", label: "Agent entrant", type: "text" },
+    { name: "completedBy", label: "Agent(s) ayant complété le formulaire", type: "select" },
+    { name: "agentName", label: "Agent entrant", type: "select" },
   ],
 });
 
@@ -77,21 +90,22 @@ export const SERVICES: ServiceSpec[] = [
     key: "passenger",
     label: "Passage",
     path: "/",
-    description: "Rapport d'enregistrement, d'embarquement, d'arrivée et de traitement des passagers",
+    description:
+      "Rapport d'enregistrement, d'embarquement, d'arrivée et de traitement des passagers",
     sections: [
       flightSection,
       {
         title: "Agents affectés",
         fields: [
-          { name: "ticketingAgent", label: "Agent billetterie", type: "text" },
-          { name: "webCheckAgent", label: "Agent Web Check", type: "text" },
-          { name: "checkinAgents", label: "Agents check-in", type: "text" },
+          { name: "ticketingAgent", label: "Agent billetterie", type: "select" },
+          { name: "webCheckAgent", label: "Agent Web Check", type: "select" },
+          { name: "checkinAgents", label: "Agents check-in", type: "select" },
           {
             name: "parkingBagClaimInfoAgent",
             label: "Agent parking / livraison bagages / information",
-            type: "text",
+            type: "select",
           },
-          { name: "boardingAgents", label: "Agents embarquement", type: "text" },
+          { name: "boardingAgents", label: "Agents embarquement", type: "select" },
         ],
       },
       {
@@ -117,7 +131,11 @@ export const SERVICES: ServiceSpec[] = [
           { name: "parkingSummary", label: "Résumé parking", type: "textarea" },
           { name: "bagClaimSummary", label: "Résumé livraison des bagages", type: "textarea" },
           { name: "lostFoundSummary", label: "Résumé objets trouvés", type: "textarea" },
-          { name: "technicalIssueSummary", label: "Résumé des problèmes techniques", type: "textarea" },
+          {
+            name: "technicalIssueSummary",
+            label: "Résumé des problèmes techniques",
+            type: "textarea",
+          },
           { name: "cleaningSummary", label: "Résumé du nettoyage", type: "textarea" },
           {
             name: "safetySecurityIncidents",
@@ -159,7 +177,11 @@ export const SERVICES: ServiceSpec[] = [
       {
         title: "Incidents & Directives",
         fields: [
-          { name: "technicalIssueSummary", label: "Résumé des problèmes techniques", type: "textarea" },
+          {
+            name: "technicalIssueSummary",
+            label: "Résumé des problèmes techniques",
+            type: "textarea",
+          },
           {
             name: "safetySecurityIncidents",
             label: "Incidents de sûreté et de sécurité",
@@ -202,8 +224,16 @@ export const SERVICES: ServiceSpec[] = [
       {
         title: "Incidents & Directives",
         fields: [
-          { name: "aircraftDamageReport", label: "Rapport dommages avion / équipement", type: "textarea" },
-          { name: "technicalIssueSummary", label: "Résumé des problèmes techniques", type: "textarea" },
+          {
+            name: "aircraftDamageReport",
+            label: "Rapport dommages avion / équipement",
+            type: "textarea",
+          },
+          {
+            name: "technicalIssueSummary",
+            label: "Résumé des problèmes techniques",
+            type: "textarea",
+          },
           {
             name: "safetySecurityIncidents",
             label: "Incidents de sûreté et de sécurité",
@@ -217,7 +247,7 @@ export const SERVICES: ServiceSpec[] = [
   },
   {
     key: "cargo",
-    label: "Cargo",
+    label: "Bureau Fret",
     path: "/cargo",
     description: "Rapport de fret, courrier, marchandises dangereuses et entrepôt",
     sections: [
@@ -237,8 +267,16 @@ export const SERVICES: ServiceSpec[] = [
       {
         title: "Cargo spécial & Entrepôt",
         fields: [
-          { name: "dangerousGoodsSummary", label: "Résumé marchandises dangereuses", type: "textarea" },
-          { name: "perishablesSummary", label: "Résumé périssables / cargo spécial", type: "textarea" },
+          {
+            name: "dangerousGoodsSummary",
+            label: "Résumé marchandises dangereuses",
+            type: "textarea",
+          },
+          {
+            name: "perishablesSummary",
+            label: "Résumé périssables / cargo spécial",
+            type: "textarea",
+          },
           { name: "warehouseSummary", label: "Résumé entrepôt", type: "textarea" },
           { name: "discrepanciesSummary", label: "Résumé écarts / dommages", type: "textarea" },
           { name: "documentationSummary", label: "Résumé documentation", type: "textarea" },
@@ -248,7 +286,11 @@ export const SERVICES: ServiceSpec[] = [
       {
         title: "Incidents & Directives",
         fields: [
-          { name: "technicalIssueSummary", label: "Résumé des problèmes techniques", type: "textarea" },
+          {
+            name: "technicalIssueSummary",
+            label: "Résumé des problèmes techniques",
+            type: "textarea",
+          },
           {
             name: "safetySecurityIncidents",
             label: "Incidents de sûreté et de sécurité",

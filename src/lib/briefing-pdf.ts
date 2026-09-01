@@ -430,7 +430,7 @@ export async function generateBriefingPdf(briefing: Briefing): Promise<void> {
     doc.text("Briefing — XCR-Airport", margin, footerY);
 
     const genDate = new Date().toLocaleDateString("fr-FR");
-    doc.text(`Généré le ${genDate}`, pageWidth / 2, footerY, { align: "center" });
+    doc.text(`${genDate}`, pageWidth / 2, footerY, { align: "center" });
 
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...COLORS.primary);

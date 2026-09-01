@@ -458,11 +458,12 @@ export async function buildReportPdfBlob(
   doc.setTextColor(...COLORS.white);
   doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
-  doc.text("RAPPORT DE VOL", titleX, 16);
+  doc.text("REMISE DE POSTE", titleX, 16);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
-  doc.text(formatDate(report.values["date"] || report.date), titleX, 24);
+  doc.text(`Service ${service.label}`, titleX, 24);
+  doc.text(formatDate(report.values["date"] || report.date), titleX, 30);
 
   // Flight info — right aligned
   const rightX = pageWidth - margin;

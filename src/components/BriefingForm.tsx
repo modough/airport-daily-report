@@ -22,6 +22,7 @@ import {
   type BriefingServiceKey,
 } from "@/lib/briefings";
 import { generateBriefingPdf } from "@/lib/briefing-pdf";
+import { passengerAgents, trafficAgents } from "@/lib/services";
 
 export function BriefingForm({
   service,
@@ -75,7 +76,10 @@ export function BriefingForm({
 
   const columns = spec.columns ?? [];
   const tomorrowColumns = spec.tomorrowColumns ?? [];
-  const flightTypeOptions = ["PAX", "CGO", "TNG", "CMM"];
+  const flightTypeOptions = ["PAX", "CGO", "TNG", "CMX", "TECH", "AFF"];
+ 
+ 
+  const agentsList = spec.key === "traffic" ? trafficAgents : passengerAgents;
 
   return (
     <Card className="min-w-0 border-none bg-card">
@@ -131,11 +135,14 @@ export function BriefingForm({
                           value={values[field.name] ?? ""}
                           onValueChange={(value) => setField(field.name, value)}
                         >
-                          <SelectTrigger id={`briefing-${service}-${field.name}`} className="bg-background">
+                          <SelectTrigger
+                            id={`briefing-${service}-${field.name}`}
+                            className="bg-background"
+                          >
                             <SelectValue placeholder="Sélectionner" />
                           </SelectTrigger>
                           <SelectContent>
-                            {flightTypeOptions.map((option) => (
+                            {agentsList.map((option) => (
                               <SelectItem key={option} value={option}>
                                 {option}
                               </SelectItem>
@@ -157,7 +164,7 @@ export function BriefingForm({
                             rows={3}
                             value={values[field.name] ?? ""}
                             onChange={(e) => setField(field.name, e.target.value)}
-                            className="resize-none bg-background"
+                            className="resize-none bg-background uppercase"
                           />
                         ) : (
                           <Input
@@ -250,7 +257,12 @@ export function BriefingForm({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setRows((prev) => [...prev, Object.fromEntries(columns.map((col) => [col.name, ""]))])}
+                onClick={() =>
+                  setRows((prev) => [
+                    ...prev,
+                    Object.fromEntries(columns.map((col) => [col.name, ""])),
+                  ])
+                }
               >
                 <Plus className="mr-2 h-4 w-4" />
                 Ajouter un vol

@@ -40,7 +40,7 @@ export const BRIEFINGS: BriefingSpec[] = [
           {
             name: "supervisorName",
             label: "Nom du superviseur de vol",
-            type: "text",
+            type: "select",
           },
         ],
       },
@@ -224,14 +224,9 @@ export const BRIEFINGS: BriefingSpec[] = [
             type: "time",
           },
           {
-            name: "shift",
-            label: "Horaires",
-            type: "text",
-          },
-          {
             name: "supervisorName",
             label: "Rédigé par",
-            type: "text",
+            type: "select",
           },
           {
             name: "agentsOnDuty",
