@@ -54,7 +54,7 @@ function drawBox(
   strokeColor?: [number, number, number],
   lineWidth = 0.5,
   rounded = false,
-  radius = 2
+  radius = 2,
 ) {
   doc.setLineWidth(lineWidth);
   if (fillColor) doc.setFillColor(...fillColor);
@@ -101,7 +101,9 @@ function formatFieldValue(field: FieldSpec, rawValue: string): string {
   if (!value) return "";
 
   if (field.type === "checkbox") {
-    return value === "true" || value.toLowerCase() === "yes" || value.toLowerCase() === "oui" ? "OUI" : "NON";
+    return value === "true" || value.toLowerCase() === "yes" || value.toLowerCase() === "oui"
+      ? "OUI"
+      : "NON";
   }
 
   if (field.type === "date") {
@@ -122,7 +124,7 @@ function addFieldsRow(
   fields: { label: string; value: string }[],
   margin: number,
   y: number,
-  contentWidth: number
+  contentWidth: number,
 ): number {
   if (fields.length === 0) return y;
 
@@ -171,7 +173,7 @@ function addTextBlock(
   value: string | undefined,
   margin: number,
   y: number,
-  contentWidth: number
+  contentWidth: number,
 ): number {
   if (!value?.trim()) return y;
 
@@ -202,7 +204,7 @@ function addStatusBadge(
   label: string,
   status: "success" | "warning" | "danger" | "neutral",
   x: number,
-  y: number
+  y: number,
 ): number {
   const colors = {
     success: COLORS.success,
@@ -225,7 +227,9 @@ function addStatusBadge(
   return x + textWidth + 6;
 }
 
-export async function buildBriefingPdfBlob(briefing: Briefing): Promise<{ blob: Blob; filename: string }> {
+export async function buildBriefingPdfBlob(
+  briefing: Briefing,
+): Promise<{ blob: Blob; filename: string }> {
   const spec = getBriefingSpec(briefing.service);
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const margin = 16;
@@ -251,7 +255,13 @@ export async function buildBriefingPdfBlob(briefing: Briefing): Promise<{ blob: 
       const logoHeight = (props.height / props.width) * logoWidth;
       doc.setFillColor(...COLORS.white);
       doc.circle(margin + logoWidth / 2, headerHeight / 2, logoWidth / 2 + 5, "F");
-      doc.addImage(logoDataUrl as any, margin, headerHeight / 2 - logoHeight / 2, logoWidth, logoHeight);
+      doc.addImage(
+        logoDataUrl as any,
+        margin,
+        headerHeight / 2 - logoHeight / 2,
+        logoWidth,
+        logoHeight,
+      );
     } catch {
       // ignore
     }
@@ -268,21 +278,26 @@ export async function buildBriefingPdfBlob(briefing: Briefing): Promise<{ blob: 
   doc.text(`Service ${spec.label}`, titleX, 24);
   doc.text(formatDate(briefing.values["date"] || briefing.date), titleX, 30);
 
-  const reference = "OPS-REC-RB-V2-SEP26";
-  
-  
+  const docReference = "OPS-REC-RB-V2-SEP26";
+
   const rightX = pageWidth - margin;
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.text(docReference, rightX, 16, { align: "right" });
+
   if (briefing.values["briefingTime"]) {
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    doc.text(`Heure ${briefing.values["briefingTime"]}`, rightX, 16, { align: "right" });
+    doc.text(`Heure ${briefing.values["briefingTime"]}`, rightX, 24, { align: "right" });
   }
 
-  const supervisor = briefing.values["supervisorName"] || briefing.values["agentName"];
+  const supervisor = String(
+    briefing.values["supervisorName"] ?? briefing.values["agentName"] ?? "",
+  ).trim();
+
   if (supervisor) {
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.text(reference, rightX, 24, { align: "right" });
     doc.text(`Superviseur : ${supervisor}`, rightX, 30, { align: "right" });
   }
 
@@ -326,7 +341,12 @@ export async function buildBriefingPdfBlob(briefing: Briefing): Promise<{ blob: 
 
   const columns = spec.columns ?? [];
   const tomorrowColumns = spec.tomorrowColumns ?? [];
-  const rows = briefing.rows.filter((row) => columns.some((col) => (row[col.name] ?? "").trim() !== ""));
+  const rows = briefing.rows.filter((row) =>
+    columns.some((col) => (row[col.name] ?? "").trim() !== ""),
+  );
+  const tomorrowRows = (briefing.tomorrowRows ?? []).filter((row) =>
+    tomorrowColumns.some((col) => (row[col.name] ?? "").trim() !== ""),
+  );
 
   if (columns.length > 0 && rows.length > 0) {
     y = addPageIfNeeded(doc, y, 26);
@@ -367,17 +387,18 @@ export async function buildBriefingPdfBlob(briefing: Briefing): Promise<{ blob: 
         if (text) {
           doc.text(text, margin + index * colWidth + 1.5, y + 5.5, { maxWidth: colWidth - 3 });
         }
-        if (index > 0) doc.line(margin + index * colWidth, y, margin + index * colWidth, y + rowHeight);
+        if (index > 0)
+          doc.line(margin + index * colWidth, y, margin + index * colWidth, y + rowHeight);
       });
       y += rowHeight;
     }
 
     y += 6;
   }
-  if (tomorrowColumns.length > 0 && rows.length > 0) {
+  if (tomorrowColumns.length > 0 && tomorrowRows.length > 0) {
     y = addPageIfNeeded(doc, y, 26);
     y = addSectionTitle(doc, "Prévision des vols demain", margin, y);
-    const colWidth = contentWidth / columns.length;
+    const colWidth = contentWidth / tomorrowColumns.length;
     const rowHeight = 8;
 
     const drawHeader = () => {
@@ -386,7 +407,7 @@ export async function buildBriefingPdfBlob(briefing: Briefing): Promise<{ blob: 
       doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...COLORS.text);
-      columns.forEach((col, index) => {
+      tomorrowColumns.forEach((col, index) => {
         doc.text(col.label, margin + index * colWidth + 1.5, y + 5.5, { maxWidth: colWidth - 3 });
       });
       y += rowHeight;
@@ -397,7 +418,7 @@ export async function buildBriefingPdfBlob(briefing: Briefing): Promise<{ blob: 
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...COLORS.text);
 
-    for (const row of rows) {
+    for (const row of tomorrowRows) {
       if (y + rowHeight > pageHeight - 18) {
         doc.addPage();
         y = 24;
@@ -407,12 +428,13 @@ export async function buildBriefingPdfBlob(briefing: Briefing): Promise<{ blob: 
       doc.setDrawColor(...COLORS.border);
       doc.rect(margin, y, contentWidth, rowHeight);
       doc.setFontSize(7.5);
-      columns.forEach((col, index) => {
+      tomorrowColumns.forEach((col, index) => {
         const text = (row[col.name] ?? "").trim();
         if (text) {
           doc.text(text, margin + index * colWidth + 1.5, y + 5.5, { maxWidth: colWidth - 3 });
         }
-        if (index > 0) doc.line(margin + index * colWidth, y, margin + index * colWidth, y + rowHeight);
+        if (index > 0)
+          doc.line(margin + index * colWidth, y, margin + index * colWidth, y + rowHeight);
       });
       y += rowHeight;
     }

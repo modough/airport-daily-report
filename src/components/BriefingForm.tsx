@@ -24,6 +24,7 @@ import {
 import { buildBriefingPdfBlob, generateBriefingPdf } from "@/lib/briefing-pdf";
 import {
   chefManoeuvreList,
+  flightTypeOptions,
   passengerAgents,
   pisteEnServiceList,
   pisteEtatList,
@@ -71,7 +72,7 @@ export function BriefingForm({
       values,
       rows,
       tomorrowRows,
-      updatedAt: now,
+      updatedAt: new Date(now),
     };
   };
 
@@ -84,7 +85,7 @@ export function BriefingForm({
 
   const columns = spec.columns ?? [];
   const tomorrowColumns = spec.tomorrowColumns ?? [];
-  const flightTypeOptions = ["PAX", "CGO", "TNG", "CMX", "MEP", "AFF", "EVA", "CHA", "MIF", "MIE", "OFF"];
+ 
 
   const agentsList = spec.key === "traffic" ? trafficAgents : passengerAgents;
 

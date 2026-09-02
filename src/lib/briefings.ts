@@ -21,8 +21,8 @@ export type Briefing = {
   values: Record<string, string>;
   rows: BriefingRow[];
   tomorrowRows?: BriefingRow[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export const BRIEFINGS: BriefingSpec[] = [
@@ -561,32 +561,43 @@ export function deleteBriefing(id: string): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(getAllBriefings().filter((b) => b.id !== id)));
 }
 
-export function createEmptyRow(spec: BriefingSpec): BriefingRow {
+export function createEmptyRow(
+  spec: BriefingSpec,
+  columns: BriefingSpec["columns"] = spec.columns ?? spec.tomorrowColumns ?? [],
+): BriefingRow {
   const row: BriefingRow = {};
-  const activeColumns = spec.tomorrowColumns?.length ? spec.tomorrowColumns : (spec.columns ?? []);
-  for (const col of activeColumns) row[col.name] = "";
+  for (const col of columns ?? []) row[col.name] = "";
   return row;
 }
 
 export function createEmptyBriefing(service: BriefingServiceKey): Briefing {
   const spec = getBriefingSpec(service);
-  const now = new Date().toISOString();
-  const today = now.split("T")[0]!;
+  const now = new Date();
+  const isoNow = now.toISOString();
+  const today = isoNow.split("T")[0]!;
+  const currentTime = now.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
   const values: Record<string, string> = {};
   for (const section of spec.sections) {
     for (const field of section.fields) {
-      values[field.name] = field.name === "date" ? today : "";
+      if (field.name === "date") values[field.name] = today;
+      else if (field.name === "briefingTime") values[field.name] = currentTime;
+      else values[field.name] = "";
     }
   }
 
   const todayRows = spec.columns
-    ? [createEmptyRow(spec), createEmptyRow(spec), createEmptyRow(spec)]
+    ? [createEmptyRow(spec, spec.columns), createEmptyRow(spec, spec.columns), createEmptyRow(spec, spec.columns)]
     : [];
   const tomorrowRows = spec.tomorrowColumns
     ? [
-        createEmptyRow({ ...spec, columns: spec.tomorrowColumns }),
-        createEmptyRow({ ...spec, columns: spec.tomorrowColumns }),
-        createEmptyRow({ ...spec, columns: spec.tomorrowColumns }),
+        createEmptyRow(spec, spec.tomorrowColumns),
+        createEmptyRow(spec, spec.tomorrowColumns),
+        createEmptyRow(spec, spec.tomorrowColumns),
       ]
     : [];
 
