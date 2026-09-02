@@ -132,7 +132,7 @@ export function BriefingForm({
                             {field.label}
                           </Label>
                         </div>
-                      ) : field.name === "rffsNiveau" ? (
+                      ) : field.name === "pisteEtat" ? (
                         <>
                           <Label
                             htmlFor={`briefing-${service}-${field.name}`}
@@ -151,7 +151,7 @@ export function BriefingForm({
                               <SelectValue placeholder="Sélectionner" />
                             </SelectTrigger>
                             <SelectContent>
-                              {RFFSList.map((option) => (
+                              {pisteEtatList.map((option) => (
                                 <SelectItem key={option} value={option}>
                                   {option}
                                 </SelectItem>
