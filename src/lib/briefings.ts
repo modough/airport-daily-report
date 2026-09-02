@@ -236,6 +236,46 @@ export const BRIEFINGS: BriefingSpec[] = [
         ],
       },
       {
+        title: "Piste",
+        fields: [
+          {
+            name: "pisteDix",
+            label: "10",
+            type: "checkbox",
+          },
+          {
+            name: "pisteVingtHuit",
+            label: "28",
+            type: "checkbox",
+          },
+        ],
+      },
+      {
+        title: "Etat de la piste",
+        fields: [
+          {
+            name: "pisteEtatSec",
+            label: "Séche",
+            type: "checkbox",
+          },
+          {
+            name: "pisteEtatMouille",
+            label: "Mouillée",
+            type: "checkbox",
+          },
+          {
+            name: "pisteEtatContaminee",
+            label: "Contaminée",
+            type: "checkbox",
+          },
+          {
+            name: "pisteEtatFermee",
+            label: "Fermée",
+            type: "checkbox",
+          },
+        ],
+      },
+      {
         title: "Méteo",
         fields: [
           {
@@ -282,7 +322,7 @@ export const BRIEFINGS: BriefingSpec[] = [
             name: "Remarks",
             label: "Remarques météo",
             type: "textarea",
-          }
+          },
         ],
       },
       {
