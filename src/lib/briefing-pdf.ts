@@ -268,6 +268,9 @@ export async function generateBriefingPdf(briefing: Briefing): Promise<void> {
   doc.text(`Service ${spec.label}`, titleX, 24);
   doc.text(formatDate(briefing.values["date"] || briefing.date), titleX, 30);
 
+  const reference = "OPS-REC-RB-V2-JAN26";
+  
+  
   const rightX = pageWidth - margin;
   if (briefing.values["briefingTime"]) {
     doc.setFontSize(11);
@@ -279,7 +282,8 @@ export async function generateBriefingPdf(briefing: Briefing): Promise<void> {
   if (supervisor) {
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    doc.text(`Superviseur : ${supervisor}`, rightX, 24, { align: "right" });
+    doc.text(reference, rightX, 24, { align: "right" });
+    doc.text(`Superviseur : ${supervisor}`, rightX, 30, { align: "right" });
   }
 
   y = headerHeight + 14;
