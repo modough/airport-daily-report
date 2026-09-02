@@ -263,7 +263,12 @@ export const BRIEFINGS: BriefingSpec[] = [
             name: "chefManoeuvre",
             label: "Chef de manœuvre",
             type: "select",
-          }
+          },
+           {
+            name: "RemarksRFFS",
+            label: "Remarques RFFS",
+            type: "textarea",
+          },
         ],
       },
       {
