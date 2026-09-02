@@ -270,7 +270,7 @@ export const BRIEFINGS: BriefingSpec[] = [
           },
           {
             name: "Foggy",
-            label: "Brouillard",
+            label: "Brume / Brouillard",
             type: "checkbox",
           },
           {
@@ -278,6 +278,11 @@ export const BRIEFINGS: BriefingSpec[] = [
             label: "Grêle",
             type: "checkbox",
           },
+          {
+            name: "Remarks",
+            label: "Remarques météo",
+            type: "textarea",
+          }
         ],
       },
       {

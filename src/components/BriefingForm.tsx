@@ -21,7 +21,7 @@ import {
   type Briefing,
   type BriefingServiceKey,
 } from "@/lib/briefings";
-import { generateBriefingPdf } from "@/lib/briefing-pdf";
+import { buildBriefingPdfBlob, generateBriefingPdf } from "@/lib/briefing-pdf";
 import { passengerAgents, trafficAgents } from "@/lib/services";
 import { MultiSelect } from "./ui/multi-select";
 
@@ -381,6 +381,19 @@ export function BriefingForm({
               <Save className="mr-2 h-4 w-4" />
               Enregistrer le briefing
             </Button>
+              <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={async () => {
+                            const { blob } = await buildBriefingPdfBlob(build());
+                            const url = URL.createObjectURL(blob);
+                            window.open(url, "_blank");
+                          }}
+                          className="flex-1"
+                        >
+                          <FileText className="mr-2 h-4 w-4" />
+                          Aperçu PDF
+                        </Button>
             <Button
               type="button"
               variant="red"

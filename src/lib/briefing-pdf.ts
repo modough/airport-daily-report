@@ -225,7 +225,7 @@ function addStatusBadge(
   return x + textWidth + 6;
 }
 
-export async function generateBriefingPdf(briefing: Briefing): Promise<void> {
+export async function buildBriefingPdfBlob(briefing: Briefing): Promise<{ blob: Blob; filename: string }> {
   const spec = getBriefingSpec(briefing.service);
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const margin = 16;
@@ -268,7 +268,7 @@ export async function generateBriefingPdf(briefing: Briefing): Promise<void> {
   doc.text(`Service ${spec.label}`, titleX, 24);
   doc.text(formatDate(briefing.values["date"] || briefing.date), titleX, 30);
 
-  const reference = "OPS-REC-RB-V2-JAN26";
+  const reference = "OPS-REC-RB-V2-SEP26";
   
   
   const rightX = pageWidth - margin;
@@ -442,6 +442,18 @@ export async function generateBriefingPdf(briefing: Briefing): Promise<void> {
   }
 
   const dateStr = briefing.values["date"] || briefing.date || "draft";
-  const fileName = `${briefing.service}-briefing-${dateStr}.pdf`;
-  doc.save(fileName);
+  const filename = `briefing-${briefing.service}-${dateStr}.pdf`;
+  const blob = doc.output("blob");
+  return { blob, filename };
+}
+export async function generateBriefingPdf(briefing: Briefing): Promise<void> {
+  const { blob, filename } = await buildBriefingPdfBlob(briefing);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }

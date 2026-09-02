@@ -208,6 +208,7 @@ function BriefingHistoryItem({
   const date = parseISO(rawDate);
   const displayDate = Number.isNaN(date.getTime()) ? rawDate : format(date, "MMM d, yyyy");
   const supervisor = briefing.values["supervisorName"] || "No supervisor recorded";
+  const briefingTime = briefing.values["briefingTime"];
   const flight = briefing.values["flightNumber"];
   const flightCount = briefing.rows.filter((row) =>
     Object.values(row).some((value) => value.trim() !== "")
@@ -222,6 +223,12 @@ function BriefingHistoryItem({
             <span className="text-xs font-semibold uppercase text-primary">Briefing</span>
             <Calendar className="ml-1 h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-sm font-medium text-foreground">{displayDate}</span>
+            {briefingTime ? (
+              <>
+                <span className="text-xs text-muted-foreground">•</span>
+                <span className="text-sm font-medium text-foreground">{briefingTime}</span>
+              </>
+            ) : null}
           </div>
           <h4 className="mt-1 text-sm font-semibold text-foreground">
             {flight ? `Vol ${flight}` : briefing.service === "traffic" ? `${flightCount} vol(s)` : "Briefing passage"}
