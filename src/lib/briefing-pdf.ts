@@ -16,6 +16,24 @@ const COLORS = {
   danger: [239, 68, 68] as [number, number, number],
 };
 
+const FLIGHT_TYPE_COLORS: Record<string, [number, number, number]> = {
+  PAX: [22, 101, 52],
+  CGO: [154, 52, 18],
+  TNG: [30, 64, 175],
+  CMX: [126, 34, 206],
+  MEP: [15, 118, 110],
+  AFF: [190, 24, 93],
+  EVA: [180, 83, 9],
+  CHA: [67, 56, 202],
+  MIF: [127, 29, 29],
+  MIE: [3, 105, 161],
+  OFF: [71, 85, 105],
+};
+
+function getFlightTypeColor(value: string): [number, number, number] {
+  return FLIGHT_TYPE_COLORS[value] ?? COLORS.text;
+}
+
 function formatDate(dateString: string): string {
   if (!dateString) return "—";
   const date = new Date(dateString);
@@ -107,16 +125,16 @@ function formatFieldValue(field: FieldSpec, rawValue: string): string {
   }
 
   if (field.type === "date") {
-    return formatDate(value);
+    return formatDate(value).toUpperCase();
   }
 
   if (field.type === "number") {
     const num = Number(value);
     if (!Number.isNaN(num)) return num.toLocaleString("fr-FR");
-    return value;
+    return value.toUpperCase();
   }
 
-  return value;
+  return value.toUpperCase();
 }
 
 function addFieldsRow(
@@ -147,7 +165,7 @@ function addFieldsRow(
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...COLORS.text);
 
-    const lines = doc.splitTextToSize(field.value, colWidth);
+    const lines = doc.splitTextToSize(field.value.toUpperCase(), colWidth);
     doc.text(lines, x, currentY + 5);
 
     const lineHeight = Math.max(lines.length * 4.5, 6);
@@ -193,7 +211,7 @@ function addTextBlock(
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...COLORS.text);
 
-  const lines = doc.splitTextToSize(value.trim(), contentWidth - 8);
+  const lines = doc.splitTextToSize(value.trim().toUpperCase(), contentWidth - 8);
   doc.text(lines, margin + 4, y);
 
   return y + lines.length * 4.8 + 8;
@@ -285,22 +303,6 @@ export async function buildBriefingPdfBlob(
   doc.setFont("helvetica", "normal");
   doc.text(docReference, rightX, 16, { align: "right" });
 
-  if (briefing.values["briefingTime"]) {
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "bold");
-    doc.text(`Heure ${briefing.values["briefingTime"]}`, rightX, 24, { align: "right" });
-  }
-
-  const supervisor = String(
-    briefing.values["supervisorName"] ?? briefing.values["agentName"] ?? "",
-  ).trim();
-
-  if (supervisor) {
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Superviseur : ${supervisor}`, rightX, 30, { align: "right" });
-  }
-
   y = headerHeight + 14;
 
   for (const section of spec.sections) {
@@ -383,10 +385,12 @@ export async function buildBriefingPdfBlob(
       doc.rect(margin, y, contentWidth, rowHeight);
       doc.setFontSize(7.5);
       columns.forEach((col, index) => {
-        const text = (row[col.name] ?? "").trim();
+        const text = (row[col.name] ?? "").trim().toUpperCase();
         if (text) {
+          doc.setTextColor(...(col.name === "flightType" ? getFlightTypeColor(text) : COLORS.text));
           doc.text(text, margin + index * colWidth + 1.5, y + 5.5, { maxWidth: colWidth - 3 });
         }
+        doc.setTextColor(...COLORS.text);
         if (index > 0)
           doc.line(margin + index * colWidth, y, margin + index * colWidth, y + rowHeight);
       });
@@ -429,10 +433,12 @@ export async function buildBriefingPdfBlob(
       doc.rect(margin, y, contentWidth, rowHeight);
       doc.setFontSize(7.5);
       tomorrowColumns.forEach((col, index) => {
-        const text = (row[col.name] ?? "").trim();
+        const text = (row[col.name] ?? "").trim().toUpperCase();
         if (text) {
+          doc.setTextColor(...(col.name === "flightType" ? getFlightTypeColor(text) : COLORS.text));
           doc.text(text, margin + index * colWidth + 1.5, y + 5.5, { maxWidth: colWidth - 3 });
         }
+        doc.setTextColor(...COLORS.text);
         if (index > 0)
           doc.line(margin + index * colWidth, y, margin + index * colWidth, y + rowHeight);
       });

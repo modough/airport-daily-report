@@ -360,11 +360,6 @@ export const BRIEFINGS: BriefingSpec[] = [
       {
         title: "Consignes",
         fields: [
-          {
-            name: "safetyReminders",
-            label: "Niveau RFFS",
-            type: "textarea",
-          },
 
           {
             name: "notam",
@@ -398,7 +393,7 @@ export const BRIEFINGS: BriefingSpec[] = [
       },
       {
         name: "route",
-        label: "Itinéraire",
+        label: "Routing",
         type: "text",
       },
       {
@@ -452,7 +447,7 @@ export const BRIEFINGS: BriefingSpec[] = [
     tomorrowColumns: [
       {
         name: "flightType",
-        label: "Type de vol",
+        label: "Type",
         type: "select",
       },
       {
@@ -462,7 +457,7 @@ export const BRIEFINGS: BriefingSpec[] = [
       },
       {
         name: "route",
-        label: "Itinéraire",
+        label: "Routing",
         type: "text",
       },
       {
@@ -504,12 +499,12 @@ export const BRIEFINGS: BriefingSpec[] = [
 
       {
         name: "fueling",
-        label: "Avitaillement",
+        label: "Fueling",
         type: "text",
       },
       {
         name: "remarks",
-        label: "Remarques",
+        label: "RMK",
         type: "text",
       },
       
