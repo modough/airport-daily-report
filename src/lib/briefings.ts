@@ -231,7 +231,7 @@ export const BRIEFINGS: BriefingSpec[] = [
           {
             name: "agentsOnDuty",
             label: "Autres agents en service",
-            type: "text",
+            type: "select-multi",
           },
         ],
       },
@@ -240,17 +240,17 @@ export const BRIEFINGS: BriefingSpec[] = [
         fields: [
           {
             name: "Sunny",
-            label: "Ensoleillée",
+            label: "Soleil",
             type: "checkbox",
           },
           {
             name: "Cloudy",
-            label: "Nuageuse",
+            label: "Nuage",
             type: "checkbox",
           },
           {
             name: "Rainy",
-            label: "Pluvieuse",
+            label: "Pluie",
             type: "checkbox",
           },
           {
@@ -305,7 +305,7 @@ export const BRIEFINGS: BriefingSpec[] = [
           },
           {
             name: "customs",
-            label: "Douanes",
+            label: "Douane",
             type: "textarea",
           },
           {
@@ -391,17 +391,17 @@ export const BRIEFINGS: BriefingSpec[] = [
       },
       {
         name: "fueling",
-        label: "Avitaillement",
+        label: "Fueling",
         type: "text",
       },
       {
         name: "remarks",
-        label: "Remarques",
+        label: "RMK",
         type: "text",
       },
       {
         name: "flightType",
-        label: "Type de vol",
+        label: "Type",
         type: "select",
       },
     ],

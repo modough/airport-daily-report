@@ -123,7 +123,7 @@ export function DailyReportForm({ service, selectedId, onSaved }: DailyReportFor
                         onValueChange={(value) => setField(field.name, value)}
                       >
                         <SelectTrigger className="bg-background">
-                          <SelectValue placeholder={field.label} />
+                          <SelectValue placeholder="Séléctionner un agent" />
                         </SelectTrigger>
                         <SelectContent>
                           {agentsList.map((agent) => (

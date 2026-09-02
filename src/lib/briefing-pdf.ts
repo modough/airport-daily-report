@@ -101,7 +101,7 @@ function formatFieldValue(field: FieldSpec, rawValue: string): string {
   if (!value) return "";
 
   if (field.type === "checkbox") {
-    return value === "true" || value.toLowerCase() === "yes" || value.toLowerCase() === "oui" ? "Oui" : "Non";
+    return value === "true" || value.toLowerCase() === "yes" || value.toLowerCase() === "oui" ? "OUI" : "NON";
   }
 
   if (field.type === "date") {

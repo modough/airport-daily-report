@@ -23,6 +23,7 @@ import {
 } from "@/lib/briefings";
 import { generateBriefingPdf } from "@/lib/briefing-pdf";
 import { passengerAgents, trafficAgents } from "@/lib/services";
+import { MultiSelect } from "./ui/multi-select";
 
 export function BriefingForm({
   service,
@@ -77,8 +78,7 @@ export function BriefingForm({
   const columns = spec.columns ?? [];
   const tomorrowColumns = spec.tomorrowColumns ?? [];
   const flightTypeOptions = ["PAX", "CGO", "TNG", "CMX", "TECH", "AFF"];
- 
- 
+
   const agentsList = spec.key === "traffic" ? trafficAgents : passengerAgents;
 
   return (
@@ -100,7 +100,9 @@ export function BriefingForm({
                 {section.title}
               </h3>
               <div className="grid gap-4 sm:grid-cols-4">
-                {section.fields.map((field) => (
+                {section.fields.map((field) => {
+                    const fieldValue = values?.[field.name] ?? "";
+                    return(
                   <div
                     key={field.name}
                     className={`space-y-2 ${field.type === "textarea" ? "sm:col-span-2" : ""}`}
@@ -110,7 +112,7 @@ export function BriefingForm({
                         <input
                           id={`briefing-${service}-${field.name}`}
                           type="checkbox"
-                          checked={values[field.name] === "true"}
+                          checked={fieldValue === "true"}
                           onChange={(e) =>
                             setField(field.name, e.target.checked ? "true" : "false")
                           }
@@ -132,7 +134,7 @@ export function BriefingForm({
                           {field.label}
                         </Label>
                         <Select
-                          value={values[field.name] ?? ""}
+                          value={fieldValue}
                           onValueChange={(value) => setField(field.name, value)}
                         >
                           <SelectTrigger
@@ -162,15 +164,29 @@ export function BriefingForm({
                           <Textarea
                             id={`briefing-${service}-${field.name}`}
                             rows={3}
-                            value={values[field.name] ?? ""}
+                            value={fieldValue}
                             onChange={(e) => setField(field.name, e.target.value)}
                             className="resize-none bg-background uppercase"
+                          />
+                        ) : field.type === "select-multi" ? (
+                          <MultiSelect
+                            value={
+                              values[field.name]
+                                ? fieldValue.split(",").map((v) => v.trim())
+                                : []
+                            }
+                            onValueChange={(value) => setField(field.name, value.join(", "))}
+                            options={trafficAgents.map((agent) => ({
+                              value: agent,
+                              label: agent,
+                            }))}
+                            placeholder="Sélectionner agents..."
                           />
                         ) : (
                           <Input
                             id={`briefing-${service}-${field.name}`}
                             type={field.type}
-                            value={values[field.name] ?? ""}
+                            value={fieldValue}
                             onChange={(e) => setField(field.name, e.target.value)}
                             className="bg-background"
                           />
@@ -178,7 +194,7 @@ export function BriefingForm({
                       </>
                     )}
                   </div>
-                ))}
+                )})}
               </div>
             </section>
           ))}
