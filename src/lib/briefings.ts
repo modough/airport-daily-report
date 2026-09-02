@@ -327,6 +327,7 @@ export const BRIEFINGS: BriefingSpec[] = [
           {
             name: "ramp",
             label: "Piste",
+            placeholder: "Joignable au canal 2",
             type: "textarea",
           },
           {

@@ -282,6 +282,7 @@ export function BriefingForm({
                               value={fieldValue}
                               onChange={(e) => setField(field.name, e.target.value)}
                               className="resize-none bg-background uppercase"
+                              placeholder={field.placeholder ?? ""}
                             />
                           ) : field.type === "select-multi" ? (
                             <MultiSelect
@@ -302,6 +303,7 @@ export function BriefingForm({
                               value={fieldValue}
                               onChange={(e) => setField(field.name, e.target.value)}
                               className="bg-background"
+                              
                             />
                           )}
                         </>

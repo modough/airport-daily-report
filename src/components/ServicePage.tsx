@@ -34,19 +34,20 @@ export function ServicePage({ service }: { service: ServiceKey }) {
         <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 ">
           {hasBriefing && (
             <div className="mb-6 inline-flex rounded-lg border border-border bg-card p-1">
-              <Button
-                size="sm"
-                variant={tab === "report" ? "default" : "ghost"}
-                onClick={() => setTab("report")}
-              >
-                Remise de poste
-              </Button>
+              
               <Button
                 size="sm"
                 variant={tab === "briefing" ? "default" : "ghost"}
                 onClick={() => setTab("briefing")}
               >
                 Briefing
+              </Button>
+              <Button
+                size="sm"
+                variant={tab === "report" ? "default" : "ghost"}
+                onClick={() => setTab("report")}
+              >
+                Remise de poste
               </Button>
             </div>
           )}

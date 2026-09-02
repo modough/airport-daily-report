@@ -4,6 +4,7 @@ export type FieldSpec = {
   name: string;
   label: string;
   type: FieldType;
+  placeholder?: string;
 };
 
 export type SectionSpec = {
