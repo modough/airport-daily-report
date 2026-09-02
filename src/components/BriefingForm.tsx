@@ -22,7 +22,14 @@ import {
   type BriefingServiceKey,
 } from "@/lib/briefings";
 import { buildBriefingPdfBlob, generateBriefingPdf } from "@/lib/briefing-pdf";
-import { passengerAgents, trafficAgents } from "@/lib/services";
+import {
+  chefManoeuvreList,
+  passengerAgents,
+  pisteEnServiceList,
+  pisteEtatList,
+  RFFSList,
+  trafficAgents,
+} from "@/lib/services";
 import { MultiSelect } from "./ui/multi-select";
 
 export function BriefingForm({
@@ -101,100 +108,207 @@ export function BriefingForm({
               </h3>
               <div className="grid gap-4 sm:grid-cols-4">
                 {section.fields.map((field) => {
-                    const fieldValue = values?.[field.name] ?? "";
-                    return(
-                  <div
-                    key={field.name}
-                    className={`space-y-2 ${field.type === "textarea" ? "sm:col-span-2" : ""}`}
-                  >
-                    {field.type === "checkbox" ? (
-                      <div className="flex items-center gap-3  bg-background px-3 py-2">
-                        <input
-                          id={`briefing-${service}-${field.name}`}
-                          type="checkbox"
-                          checked={fieldValue === "true"}
-                          onChange={(e) =>
-                            setField(field.name, e.target.checked ? "true" : "false")
-                          }
-                          className="h-4 w-4 accent-primary"
-                        />
-                        <Label
-                          htmlFor={`briefing-${service}-${field.name}`}
-                          className="text-muted-foreground"
-                        >
-                          {field.label}
-                        </Label>
-                      </div>
-                    ) : field.type === "select" ? (
-                      <>
-                        <Label
-                          htmlFor={`briefing-${service}-${field.name}`}
-                          className="text-muted-foreground"
-                        >
-                          {field.label}
-                        </Label>
-                        <Select
-                          value={fieldValue}
-                          onValueChange={(value) => setField(field.name, value)}
-                        >
-                          <SelectTrigger
+                  const fieldValue = values?.[field.name] ?? "";
+                  return (
+                    <div
+                      key={field.name}
+                      className={`space-y-2 ${field.type === "textarea" ? "sm:col-span-2" : ""}`}
+                    >
+                      {field.type === "checkbox" ? (
+                        <div className="flex items-center gap-3  bg-background px-3 py-2">
+                          <input
                             id={`briefing-${service}-${field.name}`}
-                            className="bg-background"
-                          >
-                            <SelectValue placeholder="Sélectionner" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {agentsList.map((option) => (
-                              <SelectItem key={option} value={option}>
-                                {option}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </>
-                    ) : (
-                      <>
-                        <Label
-                          htmlFor={`briefing-${service}-${field.name}`}
-                          className="text-muted-foreground"
-                        >
-                          {field.label}
-                        </Label>
-                        {field.type === "textarea" ? (
-                          <Textarea
-                            id={`briefing-${service}-${field.name}`}
-                            rows={3}
-                            value={fieldValue}
-                            onChange={(e) => setField(field.name, e.target.value)}
-                            className="resize-none bg-background uppercase"
-                          />
-                        ) : field.type === "select-multi" ? (
-                          <MultiSelect
-                            value={
-                              values[field.name]
-                                ? fieldValue.split(",").map((v) => v.trim())
-                                : []
+                            type="checkbox"
+                            checked={fieldValue === "true"}
+                            onChange={(e) =>
+                              setField(field.name, e.target.checked ? "true" : "false")
                             }
-                            onValueChange={(value) => setField(field.name, value.join(", "))}
-                            options={trafficAgents.map((agent) => ({
-                              value: agent,
-                              label: agent,
-                            }))}
-                            placeholder="Sélectionner agents..."
+                            className="h-4 w-4 accent-primary"
                           />
-                        ) : (
-                          <Input
-                            id={`briefing-${service}-${field.name}`}
-                            type={field.type}
+                          <Label
+                            htmlFor={`briefing-${service}-${field.name}`}
+                            className="text-muted-foreground"
+                          >
+                            {field.label}
+                          </Label>
+                        </div>
+                      ) : field.name === "rffsNiveau" ? (
+                        <>
+                          <Label
+                            htmlFor={`briefing-${service}-${field.name}`}
+                            className="text-muted-foreground"
+                          >
+                            {field.label}
+                          </Label>
+                          <Select
                             value={fieldValue}
-                            onChange={(e) => setField(field.name, e.target.value)}
-                            className="bg-background"
-                          />
-                        )}
-                      </>
-                    )}
-                  </div>
-                )})}
+                            onValueChange={(value) => setField(field.name, value)}
+                          >
+                            <SelectTrigger
+                              id={`briefing-${service}-${field.name}`}
+                              className="bg-background"
+                            >
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {RFFSList.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </>
+                      ) : field.name === "rffsNiveau" ? (
+                        <>
+                          <Label
+                            htmlFor={`briefing-${service}-${field.name}`}
+                            className="text-muted-foreground"
+                          >
+                            {field.label}
+                          </Label>
+                          <Select
+                            value={fieldValue}
+                            onValueChange={(value) => setField(field.name, value)}
+                          >
+                            <SelectTrigger
+                              id={`briefing-${service}-${field.name}`}
+                              className="bg-background"
+                            >
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {RFFSList.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </>
+                      ) : field.name === "chefManoeuvre" ? (
+                        <>
+                          <Label
+                            htmlFor={`briefing-${service}-${field.name}`}
+                            className="text-muted-foreground"
+                          >
+                            {field.label}
+                          </Label>
+                          <Select
+                            value={fieldValue}
+                            onValueChange={(value) => setField(field.name, value)}
+                          >
+                            <SelectTrigger
+                              id={`briefing-${service}-${field.name}`}
+                              className="bg-background"
+                            >
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {chefManoeuvreList.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </>
+                      ) : field.name === "pisteNumber" ? (
+                        <>
+                          <Label
+                            htmlFor={`briefing-${service}-${field.name}`}
+                            className="text-muted-foreground"
+                          >
+                            {field.label}
+                          </Label>
+                          <Select
+                            value={fieldValue}
+                            onValueChange={(value) => setField(field.name, value)}
+                          >
+                            <SelectTrigger
+                              id={`briefing-${service}-${field.name}`}
+                              className="bg-background"
+                            >
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {pisteEnServiceList.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </>
+                      ) : field.type === "select" ? (
+                        <>
+                          <Label
+                            htmlFor={`briefing-${service}-${field.name}`}
+                            className="text-muted-foreground"
+                          >
+                            {field.label}
+                          </Label>
+                          <Select
+                            value={fieldValue}
+                            onValueChange={(value) => setField(field.name, value)}
+                          >
+                            <SelectTrigger
+                              id={`briefing-${service}-${field.name}`}
+                              className="bg-background"
+                            >
+                              <SelectValue placeholder="Sélectionner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {agentsList.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </>
+                      ) : (
+                        <>
+                          <Label
+                            htmlFor={`briefing-${service}-${field.name}`}
+                            className="text-muted-foreground"
+                          >
+                            {field.label}
+                          </Label>
+                          {field.type === "textarea" ? (
+                            <Textarea
+                              id={`briefing-${service}-${field.name}`}
+                              rows={3}
+                              value={fieldValue}
+                              onChange={(e) => setField(field.name, e.target.value)}
+                              className="resize-none bg-background uppercase"
+                            />
+                          ) : field.type === "select-multi" ? (
+                            <MultiSelect
+                              value={
+                                values[field.name] ? fieldValue.split(",").map((v) => v.trim()) : []
+                              }
+                              onValueChange={(value) => setField(field.name, value.join(", "))}
+                              options={trafficAgents.map((agent) => ({
+                                value: agent,
+                                label: agent,
+                              }))}
+                              placeholder="Sélectionner agents..."
+                            />
+                          ) : (
+                            <Input
+                              id={`briefing-${service}-${field.name}`}
+                              type={field.type}
+                              value={fieldValue}
+                              onChange={(e) => setField(field.name, e.target.value)}
+                              className="bg-background"
+                            />
+                          )}
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </section>
           ))}
@@ -381,19 +495,19 @@ export function BriefingForm({
               <Save className="mr-2 h-4 w-4" />
               Enregistrer le briefing
             </Button>
-              <Button
-                          type="button"
-                          variant="ghost"
-                          onClick={async () => {
-                            const { blob } = await buildBriefingPdfBlob(build());
-                            const url = URL.createObjectURL(blob);
-                            window.open(url, "_blank");
-                          }}
-                          className="flex-1"
-                        >
-                          <FileText className="mr-2 h-4 w-4" />
-                          Aperçu PDF
-                        </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={async () => {
+                const { blob } = await buildBriefingPdfBlob(build());
+                const url = URL.createObjectURL(blob);
+                window.open(url, "_blank");
+              }}
+              className="flex-1"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Aperçu PDF
+            </Button>
             <Button
               type="button"
               variant="red"

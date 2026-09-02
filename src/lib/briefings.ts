@@ -239,40 +239,31 @@ export const BRIEFINGS: BriefingSpec[] = [
         title: "Piste",
         fields: [
           {
-            name: "pisteDix",
-            label: "10",
-            type: "checkbox",
+            name: "pisteNumber",
+            label: "Piste en service",
+            type: "select",
           },
           {
-            name: "pisteVingtHuit",
-            label: "28",
-            type: "checkbox",
+            name: "pisteEtat",
+            label: "Etat de la piste",
+            type: "select",
           },
         ],
       },
+      
       {
-        title: "Etat de la piste",
+        title: "RFFS",
         fields: [
           {
-            name: "pisteEtatSec",
-            label: "Séche",
-            type: "checkbox",
+            name: "rffsNiveau",
+            label: "Niveau disponible",
+            type: "select",
           },
           {
-            name: "pisteEtatMouille",
-            label: "Mouillée",
-            type: "checkbox",
-          },
-          {
-            name: "pisteEtatContaminee",
-            label: "Contaminée",
-            type: "checkbox",
-          },
-          {
-            name: "pisteEtatFermee",
-            label: "Fermée",
-            type: "checkbox",
-          },
+            name: "chefManoeuvre",
+            label: "Chef de manœuvre",
+            type: "select",
+          }
         ],
       },
       {

@@ -37,6 +37,31 @@ export const passengerAgents = [
   "Mouhamed Mbaye",
   "Sheryne Guemazi",
 ];
+export const RFFSList = [
+  "5",
+  "7",
+  "9",
+  "Indisponible",
+];
+export const pisteEnServiceList = [
+  "10",
+  "28",
+];
+export const pisteEtatList = [
+  "Sèche",
+  "Mouillée",
+  "Contaminée",
+  "Fermée",
+];
+export const chefManoeuvreList = [
+  "Laurent Courant",
+  "Philippe Denis",
+  "Christian Roux",
+  "David Vasseur",
+  "Amaury Planson",
+  "Yannick De Seixas",
+  "Ludovic Varennes"
+];
 
 const flightSection: SectionSpec = {
   title: "Informations générales",
