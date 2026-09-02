@@ -386,6 +386,11 @@ export const BRIEFINGS: BriefingSpec[] = [
     ],
 
     columns: [
+       {
+        name: "flightType",
+        label: "Type",
+        type: "select",
+      },
       {
         name: "flightNumber",
         label: "Vol",
@@ -441,14 +446,15 @@ export const BRIEFINGS: BriefingSpec[] = [
         label: "RMK",
         type: "text",
       },
-      {
-        name: "flightType",
-        label: "Type",
-        type: "select",
-      },
+     
     ],
 
     tomorrowColumns: [
+      {
+        name: "flightType",
+        label: "Type de vol",
+        type: "select",
+      },
       {
         name: "flightNumber",
         label: "Vol",
@@ -506,11 +512,7 @@ export const BRIEFINGS: BriefingSpec[] = [
         label: "Remarques",
         type: "text",
       },
-      {
-        name: "flightType",
-        label: "Type de vol",
-        type: "select",
-      },
+      
     ],
   },
 ];

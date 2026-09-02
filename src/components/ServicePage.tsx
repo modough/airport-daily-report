@@ -14,7 +14,7 @@ const BRIEFING_SERVICES: ServiceKey[] = ["passenger", "traffic"];
 export function ServicePage({ service }: { service: ServiceKey }) {
   const [selectedId, setSelectedId] = useState<string | undefined>();
   const [refreshKey, setRefreshKey] = useState(0);
-  const [tab, setTab] = useState<"report" | "briefing">("report");
+  const [tab, setTab] = useState<"briefing" | "report">("briefing");
   const hasBriefing = BRIEFING_SERVICES.includes(service);
 
   const handleSaved = () => {

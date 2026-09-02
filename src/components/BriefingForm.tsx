@@ -84,7 +84,7 @@ export function BriefingForm({
 
   const columns = spec.columns ?? [];
   const tomorrowColumns = spec.tomorrowColumns ?? [];
-  const flightTypeOptions = ["PAX", "CGO", "TNG", "CMX", "TECH", "AFF"];
+  const flightTypeOptions = ["PAX", "CGO", "TNG", "CMX", "MEP", "AFF", "EVA", "CHA", "MIF", "MIE", "OFF"];
 
   const agentsList = spec.key === "traffic" ? trafficAgents : passengerAgents;
 
