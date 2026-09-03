@@ -25,6 +25,7 @@ import { buildBriefingPdfBlob, generateBriefingPdf } from "@/lib/briefing-pdf";
 import {
   chefManoeuvreList,
   flightTypeOptions,
+  parkingList,
   passengerAgents,
   pisteEnServiceList,
   pisteEtatList,
@@ -324,11 +325,17 @@ export function BriefingForm({
                                           {prm}
                                         </SelectItem>
                                       ))
-                                    : flightTypeOptions.map((option) => (
-                                        <SelectItem key={option} value={option}>
-                                          {option}
-                                        </SelectItem>
-                                      ))}
+                                    : col.name === "parking"
+                                      ? parkingList.map((option) => (
+                                          <SelectItem key={option} value={option}>
+                                            {option}
+                                          </SelectItem>
+                                        ))
+                                      : flightTypeOptions.map((option) => (
+                                          <SelectItem key={option} value={option}>
+                                            {option}
+                                          </SelectItem>
+                                        ))}
                                 </SelectContent>
                               </Select>
                             ) : (
@@ -370,7 +377,7 @@ export function BriefingForm({
                 }
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Ajouter un vol
+                Ajouter une ligne
               </Button>
             </section>
           )}
@@ -412,11 +419,17 @@ export function BriefingForm({
                                   <SelectValue placeholder="Sélectionner" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {flightTypeOptions.map((option) => (
-                                    <SelectItem key={option} value={option}>
-                                      {option}
-                                    </SelectItem>
-                                  ))}
+                                  {col.name === "parking"
+                                    ? parkingList.map((option) => (
+                                        <SelectItem key={option} value={option}>
+                                          {option}
+                                        </SelectItem>
+                                      ))
+                                    : flightTypeOptions.map((option) => (
+                                        <SelectItem key={option} value={option}>
+                                          {option}
+                                        </SelectItem>
+                                      ))}
                                 </SelectContent>
                               </Select>
                             ) : (
@@ -460,7 +473,7 @@ export function BriefingForm({
                 }
               >
                 <Plus className="mr-2 h-4 w-4" />
-                Ajouter un vol
+                Ajouter une ligne
               </Button>
             </section>
           )}
@@ -490,7 +503,7 @@ export function BriefingForm({
               className="flex-1"
             >
               <FileText className="mr-2 h-4 w-4" />
-              Generer le PDF
+              Générer le PDF
             </Button>
           </div>
         </form>

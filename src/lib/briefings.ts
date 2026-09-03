@@ -37,7 +37,7 @@ export const BRIEFINGS: BriefingSpec[] = [
         fields: [
           { name: "date", label: "Date", type: "date" },
           { name: "briefingTime", label: "Heure du briefing", type: "time" },
-           {
+          {
             name: "agentName",
             label: "Rédigé par",
             type: "select",
@@ -180,12 +180,8 @@ export const BRIEFINGS: BriefingSpec[] = [
             name: "bbg",
             label: "BBG",
             type: "number",
-           
           },
-          {name: "bg23",
-            label: "BG23",
-            type: "number",
-          },
+          { name: "bg23", label: "BG23", type: "number" },
           {
             name: "wcmp",
             label: "WCMP",
@@ -196,10 +192,7 @@ export const BRIEFINGS: BriefingSpec[] = [
             label: "WCLB",
             type: "number",
           },
-          {name: "wcbd",
-            label: "WCBD",
-            type: "number",
-          },
+          { name: "wcbd", label: "WCBD", type: "number" },
           {
             name: "golf",
             label: "GOLF",
@@ -214,7 +207,7 @@ export const BRIEFINGS: BriefingSpec[] = [
             name: "totalBags",
             label: "Total",
             type: "badge",
-          }
+          },
         ],
       },
       {
@@ -223,23 +216,26 @@ export const BRIEFINGS: BriefingSpec[] = [
           {
             name: "safetyReminders",
             label: "Rappels sûreté et sécurité",
+            placeholder: "RAS",
             type: "textarea",
           },
           {
             name: "specificDirectives",
             label: "Directives spécifiques",
+            placeholder: "RAS",
             type: "textarea",
           },
           {
             name: "remarks",
             label: "Remarques",
+            placeholder: "RAS",
             type: "textarea",
           },
         ],
       },
     ],
-     columns: [
-       {
+    columns: [
+      {
         name: "prmType",
         label: "Type",
         type: "select",
@@ -270,7 +266,6 @@ export const BRIEFINGS: BriefingSpec[] = [
         type: "text",
       },
     ],
-
   },
 
   {
@@ -315,7 +310,7 @@ export const BRIEFINGS: BriefingSpec[] = [
           },
         ],
       },
-      
+
       {
         title: "RFFS",
         fields: [
@@ -329,9 +324,10 @@ export const BRIEFINGS: BriefingSpec[] = [
             label: "Chef de manœuvre",
             type: "select",
           },
-           {
-            name: "RemarksRFFS",
+          {
+            name: "remarksRFFS",
             label: "Remarques RFFS",
+            placeholder: "RAS",
             type: "textarea",
           },
         ],
@@ -340,48 +336,49 @@ export const BRIEFINGS: BriefingSpec[] = [
         title: "Méteo",
         fields: [
           {
-            name: "Sunny",
+            name: "sunny",
             label: "Soleil",
             type: "checkbox",
           },
           {
-            name: "Cloudy",
+            name: "cloudy",
             label: "Nuage",
             type: "checkbox",
           },
           {
-            name: "Rainy",
+            name: "rainy",
             label: "Pluie",
             type: "checkbox",
           },
           {
-            name: "Stormy",
+            name: "stormy",
             label: "Orage",
             type: "checkbox",
           },
           {
-            name: "Snowy",
+            name: "snowy",
             label: "Neige",
             type: "checkbox",
           },
           {
-            name: "Windy",
+            name: "windy",
             label: "Vent",
             type: "checkbox",
           },
           {
-            name: "Foggy",
+            name: "foggy",
             label: "Brume / Brouillard",
             type: "checkbox",
           },
           {
-            name: "Hail",
+            name: "hail",
             label: "Grêle",
             type: "checkbox",
           },
           {
-            name: "Remarks",
+            name: "remarksWeather",
             label: "Remarques météo",
+            placeholder: "RAS",
             type: "textarea",
           },
         ],
@@ -396,28 +393,21 @@ export const BRIEFINGS: BriefingSpec[] = [
             type: "textarea",
           },
           {
-            name: "cargo",
-            label: "Fret",
-            type: "textarea",
-          },
-          {
             name: "passengers",
             label: "Passage",
+            placeholder: "RAS",
             type: "textarea",
           },
           {
             name: "security",
             label: "Sûreté",
-            type: "textarea",
-          },
-          {
-            name: "customs",
-            label: "Douane",
+            placeholder: "RAS",
             type: "textarea",
           },
           {
             name: "fueling",
             label: "Avitaillement",
+            placeholder: "RAS",
             type: "textarea",
           },
         ],
@@ -425,20 +415,22 @@ export const BRIEFINGS: BriefingSpec[] = [
       {
         title: "Consignes",
         fields: [
-
           {
             name: "notam",
             label: "Notam",
+            placeholder: "RAS",
             type: "textarea",
           },
           {
             name: "travaux",
             label: "Travaux",
+            placeholder: "RAS",
             type: "textarea",
           },
           {
-            name: "specificDirectives",
-            label: "Directives spécifiques",
+            name: "divers",
+            label: "Divers",
+            placeholder: "RAS",
             type: "textarea",
           },
         ],
@@ -446,50 +438,52 @@ export const BRIEFINGS: BriefingSpec[] = [
     ],
 
     columns: [
-       {
+      {
         name: "flightType",
         label: "Type",
         type: "select",
       },
       {
         name: "flightNumber",
-        label: "Vol",
+        label: "Cie",
         type: "text",
       },
       {
-        name: "route",
-        label: "Routing",
+        name: "aircraftType",
+        label: "Appareil",
         type: "text",
-      },
-      {
-        name: "parking",
-        label: "Parking",
-        type: "text",
-      },
-      {
-        name: "sta",
-        label: "STA",
-        type: "time",
-      },
-      {
-        name: "std",
-        label: "STD",
-        type: "time",
       },
       {
         name: "registration",
         label: "Immat.",
         type: "text",
       },
+
+      {
+        name: "sta",
+        label: "Sta(utc)",
+        type: "time",
+      },
+      {
+        name: "std",
+        label: "Std(utc)",
+        type: "time",
+      },
+
       {
         name: "tonsIn",
-        label: "IN",
+        label: "In",
         type: "number",
       },
       {
         name: "tonsOut",
-        label: "OUT",
+        label: "Out",
         type: "number",
+      },
+      {
+        name: "parking",
+        label: "Parking",
+        type: "select",
       },
       {
         name: "catering",
@@ -503,10 +497,9 @@ export const BRIEFINGS: BriefingSpec[] = [
       },
       {
         name: "remarks",
-        label: "RMK",
+        label: "Remark",
         type: "text",
       },
-     
     ],
 
     tomorrowColumns: [
@@ -517,51 +510,51 @@ export const BRIEFINGS: BriefingSpec[] = [
       },
       {
         name: "flightNumber",
-        label: "Vol",
+        label: "Cie",
         type: "text",
       },
       {
-        name: "route",
-        label: "Routing",
+        name: "aircraftType",
+        label: "Appareil",
         type: "text",
-      },
-      {
-        name: "parking",
-        label: "Parking",
-        type: "text",
-      },
-      {
-        name: "sta",
-        label: "STA",
-        type: "time",
-      },
-      {
-        name: "std",
-        label: "STD",
-        type: "time",
       },
       {
         name: "registration",
         label: "Immat.",
         type: "text",
       },
+
+      {
+        name: "sta",
+        label: "Sta(utc)",
+        type: "time",
+      },
+      {
+        name: "std",
+        label: "Std(utc)",
+        type: "time",
+      },
+
       {
         name: "tonsIn",
-        label: "IN",
+        label: "In",
         type: "number",
       },
       {
         name: "tonsOut",
-        label: "OUT",
+        label: "Out",
         type: "number",
       },
-
+      {
+        name: "parking",
+        label: "Parking",
+        type: "select",
+      },
       {
         name: "catering",
         label: "Catering",
         type: "text",
       },
-
       {
         name: "fueling",
         label: "Fueling",
@@ -569,10 +562,9 @@ export const BRIEFINGS: BriefingSpec[] = [
       },
       {
         name: "remarks",
-        label: "RMK",
+        label: "Remark",
         type: "text",
       },
-      
     ],
   },
 ];
@@ -646,12 +638,17 @@ export function createEmptyBriefing(service: BriefingServiceKey): Briefing {
     for (const field of section.fields) {
       if (field.name === "date") values[field.name] = today;
       else if (field.name === "briefingTime") values[field.name] = currentTime;
+      else if (field.name === "ramp") values[field.name] = "JOIGNABLE SUR LE CANAL 2";
       else values[field.name] = "";
     }
   }
 
   const todayRows = spec.columns
-    ? [createEmptyRow(spec, spec.columns), createEmptyRow(spec, spec.columns), createEmptyRow(spec, spec.columns)]
+    ? [
+        createEmptyRow(spec, spec.columns),
+        createEmptyRow(spec, spec.columns),
+        createEmptyRow(spec, spec.columns),
+      ]
     : [];
   const tomorrowRows = spec.tomorrowColumns
     ? [

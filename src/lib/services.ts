@@ -1,5 +1,13 @@
 export type FieldType =
-  "text" | "date" | "time" | "number" | "textarea" | "checkbox" | "select" | "select-multi"|"badge";
+  | "text"
+  | "date"
+  | "time"
+  | "number"
+  | "textarea"
+  | "checkbox"
+  | "select"
+  | "select-multi"
+  | "badge";
 
 export type FieldSpec = {
   name: string;
@@ -28,7 +36,6 @@ export type ServiceSpec = {
 };
 
 export const flightTypeOptions = [
-  "PAX",
   "CGO",
   "TNG",
   "CMX",
@@ -39,9 +46,39 @@ export const flightTypeOptions = [
   "MIF",
   "MIE",
   "OFF",
+  "OFE",
+  "ACB",
+  "EPI",
+  "PVE",
+  "PVF",
+  "REG",
+  "TRA",
 ];
 export const prmList = ["WCHR", "WCHS", "WCHC", "BLND", "DEAF", "DPNA", "MAAS"];
-
+export const parkingList = [
+  "E1E",
+  "E2E",
+  "E3E",
+  "E4E",
+  "E5",
+  "E5A",
+  "E6",
+  "E6A",
+  "E6B",
+  "E7",
+  "E7A",
+  "E7B",
+  "E8",
+  "E9",
+  "E10",
+  "M1",
+  "W1",
+  "W2",
+  "W3",
+  "W4",
+  "W5",
+  "S",
+];
 export const trafficAgents = [
   "Alice Goussale",
   "Enzo Gaude",

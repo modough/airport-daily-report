@@ -322,7 +322,10 @@ export async function buildBriefingPdfBlob(
     const filledFields = section.fields.filter((field) => {
       if (field.type === "badge") return false;
       const value = briefing.values[field.name];
-      return value !== undefined && value !== null && String(value).trim() !== "";
+      return (
+        field.type === "textarea" ||
+        (value !== undefined && value !== null && String(value).trim() !== "")
+      );
     });
 
     if (filledFields.length === 0) continue;
@@ -333,7 +336,11 @@ export async function buildBriefingPdfBlob(
     const longFields: { label: string; value: string }[] = [];
 
     for (const field of filledFields) {
-      const formatted = formatFieldValue(field, String(briefing.values[field.name] ?? ""));
+      const rawValue =
+        field.type === "textarea"
+          ? String(briefing.values[field.name] ?? "").trim() || "RAS"
+          : String(briefing.values[field.name] ?? "");
+      const formatted = formatFieldValue(field, rawValue);
       if (!formatted) continue;
 
       const entry = { label: field.label, value: formatted };
