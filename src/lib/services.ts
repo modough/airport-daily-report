@@ -1,5 +1,5 @@
 export type FieldType =
-  "text" | "date" | "time" | "number" | "textarea" | "checkbox" | "select" | "select-multi";
+  "text" | "date" | "time" | "number" | "textarea" | "checkbox" | "select" | "select-multi"|"badge";
 
 export type FieldSpec = {
   name: string;
@@ -40,6 +40,7 @@ export const flightTypeOptions = [
   "MIE",
   "OFF",
 ];
+export const prmList = ["WCHR", "WCHS", "WCHC", "BLND", "DEAF", "DPNA", "MAAS"];
 
 export const trafficAgents = [
   "Alice Goussale",

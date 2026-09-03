@@ -37,6 +37,11 @@ export const BRIEFINGS: BriefingSpec[] = [
         fields: [
           { name: "date", label: "Date", type: "date" },
           { name: "briefingTime", label: "Heure du briefing", type: "time" },
+           {
+            name: "agentName",
+            label: "Rédigé par",
+            type: "select",
+          },
           {
             name: "supervisorName",
             label: "Nom du superviseur de vol",
@@ -117,28 +122,6 @@ export const BRIEFINGS: BriefingSpec[] = [
           },
         ],
       },
-
-      {
-        title: "Prise en charge spéciale prévisionnelle",
-        fields: [
-          {
-            name: "wchrPax",
-            label: "PMR attendus",
-            type: "text",
-          },
-          {
-            name: "vipPax",
-            label: "VIP / STAFF attendus",
-            type: "text",
-          },
-          {
-            name: "specialRequests",
-            label: "Precisez les demandes particulières",
-            type: "textarea",
-          },
-        ],
-      },
-
       {
         title: "Personnel et postes",
         fields: [
@@ -150,41 +133,90 @@ export const BRIEFINGS: BriefingSpec[] = [
           {
             name: "checkinCounters",
             label: "Comptoirs d'enregistrement",
-            type: "text",
+            type: "select-multi",
           },
           {
             name: "webcheckinCounters",
             label: "Comptoir web check-in",
-            type: "text",
+            type: "select",
           },
           {
             name: "boardingGate",
             label: "Porte d'embarquement",
-            type: "text",
+            type: "select-multi",
           },
           {
             name: "ticketingAgent",
             label: "Agent billetterie",
-            type: "text",
+            type: "select",
           },
           {
             name: "checkinAgents",
             label: "Agents d'enregistrement",
-            type: "text",
+            type: "select",
           },
           {
             name: "boardingAgents",
             label: "Agents d'embarquement",
-            type: "text",
+            type: "select",
           },
           {
             name: "arrivalAgents",
             label: "Agents litiges bagages",
-            type: "text",
+            type: "select",
           },
         ],
       },
 
+      {
+        title: "Nombres de Bagages",
+        fields: [
+          {
+            name: "cbag",
+            label: "CBAG",
+            type: "number",
+          },
+          {
+            name: "bbg",
+            label: "BBG",
+            type: "number",
+           
+          },
+          {name: "bg23",
+            label: "BG23",
+            type: "number",
+          },
+          {
+            name: "wcmp",
+            label: "WCMP",
+            type: "number",
+          },
+          {
+            name: "wclb",
+            label: "WCLB",
+            type: "number",
+          },
+          {name: "wcbd",
+            label: "WCBD",
+            type: "number",
+          },
+          {
+            name: "golf",
+            label: "GOLF",
+            type: "number",
+          },
+          {
+            name: "bike",
+            label: "BIKE",
+            type: "number",
+          },
+          {
+            name: "totalBags",
+            label: "Total",
+            type: "badge",
+          }
+        ],
+      },
       {
         title: "Consignes",
         fields: [
@@ -206,6 +238,39 @@ export const BRIEFINGS: BriefingSpec[] = [
         ],
       },
     ],
+     columns: [
+       {
+        name: "prmType",
+        label: "Type",
+        type: "select",
+      },
+      {
+        name: "paxName",
+        label: "Nom",
+        type: "text",
+      },
+      {
+        name: "paxfirstName",
+        label: "Prénom",
+        type: "text",
+      },
+      {
+        name: "SeqNumber",
+        label: "Séquence",
+        type: "text",
+      },
+      {
+        name: "SeatNumber",
+        label: "Siége",
+        type: "text",
+      },
+      {
+        name: "remarks",
+        label: "RMK",
+        type: "text",
+      },
+    ],
+
   },
 
   {

@@ -28,10 +28,12 @@ import {
   passengerAgents,
   pisteEnServiceList,
   pisteEtatList,
+  prmList,
   RFFSList,
   trafficAgents,
 } from "@/lib/services";
 import { MultiSelect } from "./ui/multi-select";
+import { Badge } from "./ui/badge";
 
 export function BriefingForm({
   service,
@@ -85,9 +87,15 @@ export function BriefingForm({
 
   const columns = spec.columns ?? [];
   const tomorrowColumns = spec.tomorrowColumns ?? [];
- 
 
   const agentsList = spec.key === "traffic" ? trafficAgents : passengerAgents;
+  const totalBags = spec.sections
+    .flatMap((section) => section.fields)
+    .filter((field) => field.type === "number")
+    .reduce((total, field) => {
+      const value = Number(values[field.name] ?? 0);
+      return total + (Number.isFinite(value) ? value : 0);
+    }, 0);
 
   return (
     <Card className="min-w-0 border-none bg-card">
@@ -133,114 +141,18 @@ export function BriefingForm({
                             {field.label}
                           </Label>
                         </div>
-                      ) : field.name === "pisteEtat" ? (
-                        <>
+                      ) : field.type === "badge" ? (
+                        <div className="flex items-center gap-3  bg-background px-3 py-2">
                           <Label
                             htmlFor={`briefing-${service}-${field.name}`}
                             className="text-muted-foreground"
                           >
                             {field.label}
                           </Label>
-                          <Select
-                            value={fieldValue}
-                            onValueChange={(value) => setField(field.name, value)}
-                          >
-                            <SelectTrigger
-                              id={`briefing-${service}-${field.name}`}
-                              className="bg-background"
-                            >
-                              <SelectValue placeholder="Sélectionner" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {pisteEtatList.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </>
-                      ) : field.name === "rffsNiveau" ? (
-                        <>
-                          <Label
-                            htmlFor={`briefing-${service}-${field.name}`}
-                            className="text-muted-foreground"
-                          >
-                            {field.label}
-                          </Label>
-                          <Select
-                            value={fieldValue}
-                            onValueChange={(value) => setField(field.name, value)}
-                          >
-                            <SelectTrigger
-                              id={`briefing-${service}-${field.name}`}
-                              className="bg-background"
-                            >
-                              <SelectValue placeholder="Sélectionner" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {RFFSList.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </>
-                      ) : field.name === "chefManoeuvre" ? (
-                        <>
-                          <Label
-                            htmlFor={`briefing-${service}-${field.name}`}
-                            className="text-muted-foreground"
-                          >
-                            {field.label}
-                          </Label>
-                          <Select
-                            value={fieldValue}
-                            onValueChange={(value) => setField(field.name, value)}
-                          >
-                            <SelectTrigger
-                              id={`briefing-${service}-${field.name}`}
-                              className="bg-background"
-                            >
-                              <SelectValue placeholder="Sélectionner" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {chefManoeuvreList.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </>
-                      ) : field.name === "pisteNumber" ? (
-                        <>
-                          <Label
-                            htmlFor={`briefing-${service}-${field.name}`}
-                            className="text-muted-foreground"
-                          >
-                            {field.label}
-                          </Label>
-                          <Select
-                            value={fieldValue}
-                            onValueChange={(value) => setField(field.name, value)}
-                          >
-                            <SelectTrigger
-                              id={`briefing-${service}-${field.name}`}
-                              className="bg-background"
-                            >
-                              <SelectValue placeholder="Sélectionner" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {pisteEnServiceList.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </>
+                          <Badge className="px-6 py-2">
+                            {totalBags}
+                          </Badge>
+                        </div>
                       ) : field.type === "select" ? (
                         <>
                           <Label
@@ -249,6 +161,7 @@ export function BriefingForm({
                           >
                             {field.label}
                           </Label>
+
                           <Select
                             value={fieldValue}
                             onValueChange={(value) => setField(field.name, value)}
@@ -259,12 +172,43 @@ export function BriefingForm({
                             >
                               <SelectValue placeholder="Sélectionner" />
                             </SelectTrigger>
+
                             <SelectContent>
-                              {agentsList.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
+                              {field.name === "pisteNumber"
+                                ? pisteEnServiceList.map((option) => (
+                                    <SelectItem key={option} value={option}>
+                                      {option}
+                                    </SelectItem>
+                                  ))
+                                : field.name === "chefManoeuvre"
+                                  ? chefManoeuvreList.map((option) => (
+                                      <SelectItem key={option} value={option}>
+                                        {option}
+                                      </SelectItem>
+                                    ))
+                                  : field.name === "pisteEtat"
+                                    ? pisteEtatList.map((option) => (
+                                        <SelectItem key={option} value={option}>
+                                          {option}
+                                        </SelectItem>
+                                      ))
+                                    : field.name === "rffsNiveau"
+                                      ? RFFSList.map((option) => (
+                                          <SelectItem key={option} value={option}>
+                                            {option}
+                                          </SelectItem>
+                                        ))
+                                      : field.name === "supervisorName"
+                                        ? trafficAgents.map((option) => (
+                                            <SelectItem key={option} value={option}>
+                                              {option}
+                                            </SelectItem>
+                                          ))
+                                        : agentsList.map((option) => (
+                                            <SelectItem key={option} value={option}>
+                                              {option}
+                                            </SelectItem>
+                                          ))}
                             </SelectContent>
                           </Select>
                         </>
@@ -291,10 +235,17 @@ export function BriefingForm({
                                 values[field.name] ? fieldValue.split(",").map((v) => v.trim()) : []
                               }
                               onValueChange={(value) => setField(field.name, value.join(", "))}
-                              options={trafficAgents.map((agent) => ({
-                                value: agent,
-                                label: agent,
-                              }))}
+                              options={
+                                field.name === "checkinCounters" || field.name === "boardingGate"
+                                  ? ["1", "2", "3", "4", "5", "6"].map((counter) => ({
+                                      value: counter,
+                                      label: counter,
+                                    }))
+                                  : trafficAgents.map((agent) => ({
+                                      value: agent,
+                                      label: agent,
+                                    }))
+                              }
                               placeholder="Sélectionner agents..."
                             />
                           ) : (
@@ -304,7 +255,6 @@ export function BriefingForm({
                               value={fieldValue}
                               onChange={(e) => setField(field.name, e.target.value)}
                               className="bg-background"
-                              
                             />
                           )}
                         </>
@@ -317,9 +267,15 @@ export function BriefingForm({
           ))}
           {columns.length > 0 && (
             <section className="min-w-0 space-y-4 border-l-[3px] border-[rgb(59,130,246)] pl-4">
-              <h3 className="pb-2 text-sm font-bold uppercase tracking-wide text-[#1E3A5F]">
-                Prévision des vols - Aujourd'hui
-              </h3>
+              {spec.key === "traffic" ? (
+                <h3 className="pb-2 text-sm font-bold uppercase tracking-wide text-[#1E3A5F]">
+                  Prévision des vols - Aujourd'hui
+                </h3>
+              ) : (
+                <h3 className="pb-2 text-sm font-bold uppercase tracking-wide text-[#1E3A5F]">
+                  Prévision des Passagers - PMR
+                </h3>
+              )}
               <div className="min-w-0 max-w-full overflow-x-scroll rounded-lg border border-border">
                 <table className="min-w-[1200px] border-collapse text-sm">
                   <thead className="bg-muted/50">
@@ -352,11 +308,17 @@ export function BriefingForm({
                                   <SelectValue placeholder="Sélectionner" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {flightTypeOptions.map((option) => (
-                                    <SelectItem key={option} value={option}>
-                                      {option}
-                                    </SelectItem>
-                                  ))}
+                                  {col.name === "prmType"
+                                    ? prmList.map((prm) => (
+                                        <SelectItem key={prm} value={prm}>
+                                          {prm}
+                                        </SelectItem>
+                                      ))
+                                    : flightTypeOptions.map((option) => (
+                                        <SelectItem key={option} value={option}>
+                                          {option}
+                                        </SelectItem>
+                                      ))}
                                 </SelectContent>
                               </Select>
                             ) : (

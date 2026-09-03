@@ -124,11 +124,12 @@ function formatFieldValue(field: FieldSpec, rawValue: string): string {
       : "NON";
   }
 
+ 
   if (field.type === "date") {
     return formatDate(value).toUpperCase();
   }
 
-  if (field.type === "number") {
+  if (field.type === "number" || field.type === "badge") {
     const num = Number(value);
     if (!Number.isNaN(num)) return num.toLocaleString("fr-FR");
     return value.toUpperCase();
@@ -246,9 +247,10 @@ function addStatusBadge(
 }
 
 export async function buildBriefingPdfBlob(
-  briefing: Briefing,
+  briefing: Briefing, 
 ): Promise<{ blob: Blob; filename: string }> {
   const spec = getBriefingSpec(briefing.service);
+  
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const margin = 16;
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -301,12 +303,21 @@ export async function buildBriefingPdfBlob(
   const rightX = pageWidth - margin;
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
-  doc.text(docReference, rightX, 16, { align: "right" });
+  doc.text(spec.key === "traffic" ? docReference : "", rightX, 16, { align: "right" });
+
+  const totalBags = spec.sections
+    .flatMap((section) => section.fields)
+    .filter((field) => field.type === "number")
+    .reduce((total, field) => {
+      const value = Number(briefing.values[field.name] ?? 0);
+      return total + (Number.isFinite(value) ? value : 0);
+    }, 0);
 
   y = headerHeight + 14;
 
   for (const section of spec.sections) {
     const filledFields = section.fields.filter((field) => {
+      if (field.type === "badge") return false;
       const value = briefing.values[field.name];
       return value !== undefined && value !== null && String(value).trim() !== "";
     });
@@ -338,6 +349,16 @@ export async function buildBriefingPdfBlob(
       y = addTextBlock(doc, field.label, field.value, margin, y, contentWidth);
     }
 
+    const totalBagsField = section.fields.find((field) => field.name === "totalBags");
+    if (totalBagsField) {
+      y = addPageIfNeeded(doc, y, 20);
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      y += 5;
+      addStatusBadge(doc, `${totalBagsField.label} : ${totalBags.toLocaleString("fr-FR")}`, "neutral", margin, y);
+      y += 8;
+    }
+
     y += 4;
   }
 
@@ -352,7 +373,12 @@ export async function buildBriefingPdfBlob(
 
   if (columns.length > 0 && rows.length > 0) {
     y = addPageIfNeeded(doc, y, 26);
-    y = addSectionTitle(doc, "Prévision des vols", margin, y);
+    y = addSectionTitle(
+      doc,
+      spec.key === "traffic" ? "Prévision des vols" : "Prévision des PMR",
+      margin,
+      y,
+    );
 
     const colWidth = contentWidth / columns.length;
     const rowHeight = 8;
