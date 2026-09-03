@@ -124,7 +124,6 @@ function formatFieldValue(field: FieldSpec, rawValue: string): string {
       : "NON";
   }
 
- 
   if (field.type === "date") {
     return formatDate(value).toUpperCase();
   }
@@ -247,10 +246,10 @@ function addStatusBadge(
 }
 
 export async function buildBriefingPdfBlob(
-  briefing: Briefing, 
+  briefing: Briefing,
 ): Promise<{ blob: Blob; filename: string }> {
   const spec = getBriefingSpec(briefing.service);
-  
+
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const margin = 16;
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -307,7 +306,11 @@ export async function buildBriefingPdfBlob(
 
   const totalBags = spec.sections
     .flatMap((section) => section.fields)
-    .filter((field) => field.type === "number")
+    .filter(
+      (field) =>
+        field.type === "number" &&
+        ["wclb", "wcbd", "golf", "bg23", "wcmp", "bbg", "cbag", "bike"].includes(field.name),
+    )
     .reduce((total, field) => {
       const value = Number(briefing.values[field.name] ?? 0);
       return total + (Number.isFinite(value) ? value : 0);
@@ -355,7 +358,13 @@ export async function buildBriefingPdfBlob(
       doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
       y += 5;
-      addStatusBadge(doc, `${totalBagsField.label} : ${totalBags.toLocaleString("fr-FR")}`, "neutral", margin, y);
+      addStatusBadge(
+        doc,
+        `${totalBagsField.label} : ${totalBags.toLocaleString("fr-FR")}`,
+        "neutral",
+        margin,
+        y,
+      );
       y += 8;
     }
 

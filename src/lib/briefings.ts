@@ -148,22 +148,22 @@ export const BRIEFINGS: BriefingSpec[] = [
           {
             name: "ticketingAgent",
             label: "Agent billetterie",
-            type: "select",
+            type: "select-multi",
           },
           {
             name: "checkinAgents",
             label: "Agents d'enregistrement",
-            type: "select",
+            type: "select-multi",
           },
           {
             name: "boardingAgents",
             label: "Agents d'embarquement",
-            type: "select",
+            type: "select-multi",
           },
           {
             name: "arrivalAgents",
             label: "Agents litiges bagages",
-            type: "select",
+            type: "select-multi",
           },
         ],
       },

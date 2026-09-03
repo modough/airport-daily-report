@@ -91,7 +91,11 @@ export function BriefingForm({
   const agentsList = spec.key === "traffic" ? trafficAgents : passengerAgents;
   const totalBags = spec.sections
     .flatMap((section) => section.fields)
-    .filter((field) => field.type === "number")
+    .filter(
+      (field) =>
+        field.type === "number" &&
+        ["wclb", "wcbd", "golf", "bg23", "wcmp", "bbg", "cbag", "bike"].includes(field.name),
+    )
     .reduce((total, field) => {
       const value = Number(values[field.name] ?? 0);
       return total + (Number.isFinite(value) ? value : 0);
@@ -149,9 +153,7 @@ export function BriefingForm({
                           >
                             {field.label}
                           </Label>
-                          <Badge className="px-6 py-2">
-                            {totalBags}
-                          </Badge>
+                          <Badge className="px-6 py-2">{totalBags}</Badge>
                         </div>
                       ) : field.type === "select" ? (
                         <>
@@ -241,10 +243,18 @@ export function BriefingForm({
                                       value: counter,
                                       label: counter,
                                     }))
-                                  : trafficAgents.map((agent) => ({
-                                      value: agent,
-                                      label: agent,
-                                    }))
+                                  : field.name === "checkinAgents" ||
+                                      field.name === "boardingAgents" ||
+                                      field.name === "ticketingAgent" ||
+                                      field.name === "arrivalAgents"
+                                    ? passengerAgents.map((agent) => ({
+                                        value: agent,
+                                        label: agent,
+                                      }))
+                                    : trafficAgents.map((agent) => ({
+                                        value: agent,
+                                        label: agent,
+                                      }))
                               }
                               placeholder="Sélectionner agents..."
                             />
