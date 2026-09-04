@@ -89,6 +89,7 @@ export const trafficAgents = [
 export const passengerAgents = [
   "Amal Boumedien",
   "Augustine Roussinet",
+  "Florine Leroy",
   "Mouhamed Mbaye",
   "Sheryne Guemazi",
 ];
@@ -125,7 +126,7 @@ const timesSection: SectionSpec = {
     { name: "schedArrival", label: "Heure d'arrivée prévue", type: "time" },
     { name: "actualArrival", label: "Heure d'arrivée réelle", type: "time" },
     { name: "disembarkEnd", label: "Fin du débarquement", type: "time" },
-    { name: "boardingEnd", label: "Fin de l'embarquement", type: "time" },
+    { name: "boardingEnd", label: "Fermeture des portes", type: "time" },
     { name: "schedDeparture", label: "Heure de départ prévue", type: "time" },
     { name: "actualDeparture", label: "Heure de départ réelle", type: "time" },
     { name: "takeOffTime", label: "Heure de décollage", type: "time" },
@@ -164,23 +165,29 @@ export const SERVICES: ServiceSpec[] = [
       {
         title: "Agents affectés",
         fields: [
-          { name: "ticketingAgent", label: "Agent billetterie", type: "select" },
-          { name: "webCheckAgent", label: "Agent Web Check", type: "select" },
-          { name: "checkinAgents", label: "Agents check-in", type: "select" },
+          { name: "ticketingAgent", label: "Agent billetterie", type: "select-multi" },
+          { name: "webCheckAgent", label: "Agent Web Check", type: "select-multi" },
+          { name: "checkinAgents", label: "Agents check-in", type: "select-multi" },
           {
             name: "parkingBagClaimInfoAgent",
             label: "Agent parking / livraison bagages / information",
-            type: "select",
+            type: "select-multi",
           },
-          { name: "boardingAgents", label: "Agents embarquement", type: "select" },
+          { name: "boardingAgents", label: "Agents embarquement", type: "select-multi" },
         ],
       },
       {
         title: "Check-in",
         fields: [
           { name: "checkinSummary", label: "Résumé du check-in", type: "textarea" },
-          { name: "baggagesChecked", label: "Nombre de bagages enregistrés", type: "number" },
-          { name: "numberOfPayments", label: "Nombre de paiements", type: "number" },
+          { name: "baggagesChecked", label: "Nombre de bagages en soute", type: "number" },
+          {name: "itemsToGate", label: "Nombre d'ITG", type: "number" },
+           {
+            name: "totalBags",
+            label: "Total bagages",
+            type: "badge",
+          },
+          { name: "numberOfPayments", label: "Nombre de passagers facturés", type: "number" },
           { name: "amount", label: "Montant", type: "text" },
         ],
       },

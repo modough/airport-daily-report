@@ -195,9 +195,7 @@ function formatFieldValue(field: FieldSpec, rawValue: string): string {
       return value;
     }
     case "text": {
-      const isAmount =
-        field.name === "amount" ||
-        field.label.toLowerCase().includes("amount");
+      const isAmount = field.name === "amount" || field.label.toLowerCase().includes("amount");
       if (isAmount) {
         const normalized = value.replace(/\s/g, "").replace(",", ".");
         const num = Number(normalized);
@@ -227,7 +225,7 @@ function drawBox(
   strokeColor?: [number, number, number],
   lineWidth = 0.5,
   rounded = false,
-  radius = 2
+  radius = 2,
 ) {
   doc.setLineWidth(lineWidth);
   if (fillColor) doc.setFillColor(...fillColor);
@@ -281,7 +279,7 @@ function addFieldsRow(
   fields: FieldDef[],
   margin: number,
   y: number,
-  contentWidth: number
+  contentWidth: number,
 ): number {
   if (fields.length === 0) return y;
 
@@ -330,7 +328,7 @@ function addField(
   value: unknown,
   margin: number,
   y: number,
-  contentWidth: number
+  contentWidth: number,
 ): number {
   if (value === undefined || value === null || value === "" || value === "—") return y;
 
@@ -358,7 +356,7 @@ function addTextBlock(
   value: string | undefined,
   margin: number,
   y: number,
-  contentWidth: number
+  contentWidth: number,
 ): number {
   if (!value?.trim()) return y;
 
@@ -389,7 +387,7 @@ function addStatusBadge(
   label: string,
   status: "success" | "warning" | "danger" | "neutral",
   x: number,
-  y: number
+  y: number,
 ): number {
   const colors = {
     success: COLORS.success,
@@ -415,7 +413,7 @@ function addStatusBadge(
 // ─── MAIN BUILDER ───
 
 export async function buildReportPdfBlob(
-  report: DailyReport
+  report: DailyReport,
 ): Promise<{ blob: Blob; filename: string }> {
   const service = getService(report.service);
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -447,7 +445,13 @@ export async function buildReportPdfBlob(
       const logoHeight = (props.height / props.width) * logoWidth;
       doc.setFillColor(...COLORS.white);
       doc.circle(margin + logoWidth / 2, headerHeight / 2, logoWidth / 2 + 5, "F");
-      doc.addImage(logoDataUrl as any, margin, headerHeight / 2 - logoHeight / 2, logoWidth, logoHeight);
+      doc.addImage(
+        logoDataUrl as any,
+        margin,
+        headerHeight / 2 - logoHeight / 2,
+        logoWidth,
+        logoHeight,
+      );
     } catch {
       // ignore
     }
@@ -480,6 +484,16 @@ export async function buildReportPdfBlob(
     doc.setFont("helvetica", "normal");
     doc.text(`Destination : ${destination}`, rightX, 24, { align: "right" });
   }
+  // Total bags — badge
+  const totalBags = service.sections
+    .flatMap((section) => section.fields)
+    .filter(
+      (field) => field.type === "number" && ["baggagesChecked", "itemsToGate"].includes(field.name),
+    )
+    .reduce((total, field) => {
+      const value = Number(report.values[field.name] ?? 0);
+      return total + (Number.isFinite(value) ? value : 0);
+    }, 0);
 
   // Status badge
   const delayCode = report.values["delayCode"];
@@ -504,11 +518,11 @@ export async function buildReportPdfBlob(
     if (filledFields.length === 0) continue;
 
     const delayFields = filledFields.filter(
-      (f) => f.name === "delayCode" || f.name === "delayReason"
+      (f) => f.name === "delayCode" || f.name === "delayReason",
     );
     const safetyField = filledFields.find((f) => f.name === "safetySecurityIncidents");
     const normalFields = filledFields.filter(
-      (f) => f.name !== "delayCode" && f.name !== "delayReason"
+      (f) => f.name !== "delayCode" && f.name !== "delayReason",
     );
 
     y = addSectionTitle(doc, getSectionTitle(section.title), margin, y);
@@ -525,7 +539,21 @@ export async function buildReportPdfBlob(
         shortFields.push({ label: getFieldLabel(field), value: formatted });
       }
     }
-
+    const totalBagsField = section.fields.find((field) => field.name === "totalBags");
+    if (totalBagsField) {
+      y = addPageIfNeeded(doc, y, 20);
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      y += 5;
+      addStatusBadge(
+        doc,
+        `${totalBagsField.label} : ${totalBags.toLocaleString("fr-FR")}`,
+        "neutral",
+        margin,
+        y,
+      );
+      y += 8;
+    }
     if (shortFields.length > 0) {
       y = addFieldsRow(doc, shortFields, margin, y, contentWidth);
     }
@@ -557,7 +585,7 @@ export async function buildReportPdfBlob(
         [245, 158, 11],
         0.5,
         true,
-        2
+        2,
       );
 
       y += 6;
@@ -571,7 +599,7 @@ export async function buildReportPdfBlob(
           formatFieldValue(delayCodeField, String(report.values["delayCode"])),
           margin + 4,
           y,
-          contentWidth - 8
+          contentWidth - 8,
         );
       }
 
@@ -582,7 +610,7 @@ export async function buildReportPdfBlob(
           formatFieldValue(delayReasonField, String(report.values["delayReason"])),
           margin + 4,
           y,
-          contentWidth - 8
+          contentWidth - 8,
         );
       }
 

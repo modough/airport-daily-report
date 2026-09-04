@@ -16,6 +16,8 @@ import {
 import { getService, passengerAgents, trafficAgents, type ServiceKey } from "@/lib/services";
 import { generateReportPdf, buildReportPdfBlob } from "@/lib/pdf-generator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Badge } from "./ui/badge";
+import { MultiSelect } from "./ui/multi-select";
 
 type DailyReportFormProps = {
   service: ServiceKey;
@@ -56,6 +58,16 @@ export function DailyReportForm({ service, selectedId, onSaved }: DailyReportFor
     };
   };
 
+  const totalBags = spec.sections
+    .flatMap((section) => section.fields)
+    .filter(
+      (field) => field.type === "number" && ["baggagesChecked", "itemsToGate"].includes(field.name),
+    )
+    .reduce((total, field) => {
+      const value = Number(values[field.name] ?? 0);
+      return total + (Number.isFinite(value) ? value : 0);
+    }, 0);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const report = buildReport();
@@ -84,66 +96,95 @@ export function DailyReportForm({ service, selectedId, onSaved }: DailyReportFor
               </h3>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                {section.fields.map((field) => (
-                  <div
-                    key={field.name}
-                    className={`space-y-2 ${field.type === "textarea" ? "sm:col-span-2" : ""}`}
-                  >
-                    <Label htmlFor={`${service}-${field.name}`} className="text-muted-foreground">
-                      {field.label}
-                    </Label>
+                {section.fields.map((field) => {
+                  const fieldValue = values?.[field.name] ?? "";
+                  return (
+                    <div
+                      key={field.name}
+                      className={`space-y-2 ${field.type === "textarea" ? "sm:col-span-2" : ""}`}
+                    >
+                      <Label htmlFor={`${service}-${field.name}`} className="text-muted-foreground">
+                        {field.label}
+                      </Label>
 
-                    {field.type === "textarea" ? (
-                      <Textarea
-                        id={`${service}-${field.name}`}
-                        rows={3}
-                        value={values[field.name] ?? ""}
-                        onChange={(e) => setField(field.name, e.target.value)}
-                        className="resize-none bg-background"
-                      />
-                    ) : field.name === "supervisorName" ? (
-                      <Select
-                        value={values[field.name] ?? ""}
-                        onValueChange={(value) => setField(field.name, value)}
-                      >
-                        <SelectTrigger className="bg-background">
-                          <SelectValue placeholder={field.label} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {trafficAgents.map((agent) => (
-                            <SelectItem key={agent} value={agent}>
-                              {agent}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : field.type === "select" ? (
-                      <Select
-                        value={values[field.name] ?? ""}
-                        onValueChange={(value) => setField(field.name, value)}
-                      >
-                        <SelectTrigger className="bg-background">
-                          <SelectValue placeholder="Séléctionner un agent" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {agentsList.map((agent) => (
-                            <SelectItem key={agent} value={agent}>
-                              {agent}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <Input
-                        id={`${service}-${field.name}`}
-                        type={field.type}
-                        value={values[field.name] ?? ""}
-                        onChange={(e) => setField(field.name, e.target.value)}
-                        className="bg-background"
-                      />
-                    )}
-                  </div>
-                ))}
+                      {field.type === "badge" ? (
+                        <Badge className="ml-4 px-6 py-2">{totalBags}</Badge>
+                      ) : field.type === "textarea" ? (
+                        <Textarea
+                          id={`${service}-${field.name}`}
+                          rows={3}
+                          value={fieldValue}
+                          onChange={(e) => setField(field.name, e.target.value)}
+                          className="resize-none bg-background"
+                        />
+                      ) : field.name === "supervisorName" ? (
+                        <Select
+                          value={fieldValue}
+                          onValueChange={(value) => setField(field.name, value)}
+                        >
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder={field.label} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {trafficAgents.map((agent) => (
+                              <SelectItem key={agent} value={agent}>
+                                {agent}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : field.type === "select-multi" ? (
+                        <MultiSelect
+                          value={
+                            values[field.name] ? fieldValue.split(",").map((v) => v.trim()) : []
+                          }
+                          onValueChange={(value) => setField(field.name, value.join(", "))}
+                          options={
+                            field.name === "checkinAgents" ||
+                            field.name === "boardingAgents" ||
+                            field.name === "ticketingAgent" ||
+                            field.name === "arrivalAgents" ||
+                            field.name === "webCheckAgent" ||
+                            field.name === "parkingBagClaimInfoAgent"
+                              ? passengerAgents.map((agent) => ({
+                                  value: agent,
+                                  label: agent,
+                                }))
+                              : trafficAgents.map((agent) => ({
+                                  value: agent,
+                                  label: agent,
+                                }))
+                          }
+                          placeholder="Sélectionner agents..."
+                        />
+                      ) : field.type === "select" ? (
+                        <Select
+                          value={values[field.name] ?? ""}
+                          onValueChange={(value) => setField(field.name, value)}
+                        >
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Séléctionner un agent" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {agentsList.map((agent) => (
+                              <SelectItem key={agent} value={agent}>
+                                {agent}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          id={`${service}-${field.name}`}
+                          type={field.type}
+                          value={values[field.name] ?? ""}
+                          onChange={(e) => setField(field.name, e.target.value)}
+                          className="bg-background"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </section>
           ))}
